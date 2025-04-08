@@ -29,8 +29,8 @@ cd habit-tracker
 
 # Create and activate a virtual environment
 python -m venv venv
-source venv/bin/activate # On macOS/Linux:
-venv\Scripts\activate # On Windows:
+source venv/bin/activate # On macOS/Linux
+venv\Scripts\activate # On Windows
 
 # Install dependencies (to be added)
 pip install -r requirements.txt
@@ -43,21 +43,24 @@ This section will include how to run unit tests, if applicable.
 
 ## Project Structure (Initial)
 ```
-habit_tracker/
-├── app/                     ← your main Flask application code
-│   ├── routes.py            ← all your Flask views (page logic)
-│   ├── models.py            ← database models and tables
-│   ├── forms.py             ← forms for user input
-│   └── templates/           ← HTML templates for rendering pages
-│
-├── static/                  ← CSS, images, JavaScript files
-│
-├── tests/                   ← test files go here (later)
-│
-├── README.md                ← info about your project
-├── requirements.txt         ← list of Python packages
-├── run.py                   ← how to launch the Flask app
-├── deliverables/            ← intermediate presentation materials
+gc2/                            ← GitHub repository directory
+├──habit_tracker/               ← Flask main application folder
+│  ├── app/                     ← your main Flask application code
+│  │   ├── __init__.py          ← initialization file
+│  │   ├── routes.py            ← all your Flask views (page logic)
+│  │   ├── models.py            ← database models and tables
+│  │   ├── forms.py             ← forms for user input
+│  │   └── templates/           ← HTML templates for rendering pages
+│  │       └── index.html
+│  ├── static/                  ← CSS, images, JavaScript files
+│  │   └── style.css
+│  ├── test/                    ← test files go here (later)
+│  ├── run.py                   ← how to launch the Flask app
+│  ├── requirements.txt         ← list of Python packages
+│  └── .gitignore               ← ignore development files in venv/ etc.
+├── deliverables/               ← intermediate presentation materials
+├── README.md                   ← info about your project
+├── venv/                       ← local virtual environment (do not upload to GitHub)
 ```
 
 ## Team Members
