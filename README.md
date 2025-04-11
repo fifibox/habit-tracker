@@ -2,7 +2,7 @@
 
 This is a Flask-based web application that helps users track their daily habits and visualize their progress over time. It is designed to be lightweight, user-friendly, and insightful for anyone looking to improve their routines or build new ones.
 
-## Features (To be added)
+## Features (To Be Added)
 
 - 📝 Register and log in to your account
 - ➕ Add custom habits to track (e.g., sleep, steps, diet)
@@ -43,7 +43,7 @@ This section will include how to run unit tests, if applicable.
 
 ## Project Structure (Initial)
 ```
-gc2/                            ← GitHub repository directory
+gc_2_app/                            ← GitHub repository directory
 ├──habit_tracker/               ← Flask main application folder
 │  ├── app/                     ← your main Flask application code
 │  │   ├── __init__.py          ← initialization file
@@ -56,11 +56,11 @@ gc2/                            ← GitHub repository directory
 │  │   └── style.css
 │  ├── test/                    ← test files go here (later)
 │  ├── run.py                   ← how to launch the Flask app
-│  ├── requirements.txt         ← list of Python packages
-│  └── .gitignore               ← ignore development files in venv/ etc.
+│  └── requirements.txt         ← list of Python packages
 ├── deliverables/               ← intermediate presentation materials
 ├── README.md                   ← info about your project
 ├── venv/                       ← local virtual environment (do not upload to GitHub)
+└── .gitignore                  ← ignore development files in venv/ etc.
 ```
 
 ## Team Members
