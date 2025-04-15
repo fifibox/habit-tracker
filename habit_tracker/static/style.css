@@ -1,0 +1,71 @@
+/* Basic Styling */
+body {
+    font-family: 'National Park', 'Arial', sans-serif;
+    background-color: #f8f9fa; /* Light background color */
+  }
+  
+  h1 {
+    font-size: 3rem;
+  }
+  
+  /* Navbar Styling */
+  .navbar {
+    border-bottom: none;
+  }
+  
+  .navbar .navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #4a90e2;
+  }
+  
+  .navbar .navbar-brand:hover,
+  .navbar .navbar-brand:focus,
+  .navbar .navbar-brand:active {
+    color: #4a90e2;  
+    background-color: transparent; 
+  }
+  
+  .navbar .btn {
+    background-color: transparent;
+    font-size: 1.25rem;
+    font-weight: 500;
+    border: none;
+    color: #4a90e2;
+    box-shadow: none;
+  }
+  
+  .navbar .btn.btn-outline-primary:hover,
+  .navbar .btn.btn-outline-primary:active {
+    background-color: transparent; 
+    border: none; 
+    color: #023e8a;  
+    outline: none; 
+    box-shadow: none !important;  
+  }
+  
+  .navbar .btn.btn-outline-primary:focus {
+    background-color: transparent;
+    color: #4a90e2;  
+    box-shadow: none;
+  }
+  /* Footer Styling */
+  footer {
+    padding: 1rem 0; 
+    text-align: center;
+  }
+  
+  footer p {
+    font-size: 1.25rem; 
+    color: #555;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 767px) {
+    h1 {
+      font-size: 2.5rem;
+    }
+    footer p {
+      font-size: 1rem; 
+    }
+  }
