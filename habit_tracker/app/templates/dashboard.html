@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {  
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background-color: #f9f9f9;
+            }
+
+            .container {
+            display: flex;
+            gap: 40px;
+            }
+
+            section {
+            border: 4px solid black;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.4);
+            width: 400px;
+            }
+
+            h2 {
+            margin-top: 0;
+            }
+
+            .habit-item {
+            margin: 10px 0;
+            }
+
+            .add-habit-btn,
+            .share-btn {
+            padding: 8px 16px;
+            background-color: white;
+            border: 2px solid black;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+            }
+
+            .add-habit-btn{
+            margin-top: 20px;
+            }
+
+            .stats-line {
+            margin: 10px 0;
+            }
+
+            .bar {
+            display: flex;
+            align-items: center;
+            margin-top:15px;
+            }
+
+            .bar-label {
+            width: 120px;
+            }
+
+            .bar-track {
+            height: 12px;
+            background-color: #ddd;
+            border: 1px solid #aaa;
+            flex-grow: 1;
+            margin-right: 8px;
+            position: relative;
+            }
+
+            .bar-fill {
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            }
+
+            .green { background-color: #4CAF50; width: 86%; } /* 6/7 */
+            .red { background-color: #F28B82; width: 100%; } /* 7/7 */
+            .blue { background-color: #4285F4; width: 100%; }
+            .purple { background-color: #AB47BC; width: 86%; }
+
+            .share-btn {
+                float:right;
+            }
+        </style>
+</head>
+<body>
+    <!-- placeholder for nav bar  -->
+
+    <!-- Daily habit section -->
+    <div class="container"> 
+        <section id="daily-habits">
+            <h2>Daily Habits</h2>
+            
+            <div class="habit-item">
+                <input type="checkbox" id="habit1" checked>
+                <label for="habit1">Wake up early</label>
+            </div>
+            <div class="habit-item">
+                <input type="checkbox" id="habit2" checked>
+                <label for="habit2">Drink water</label>
+            </div>
+            <div class="habit-item">
+                <input type="checkbox" id="habit3" checked>
+                <label for="habit3">No takeout</label>
+            </div>
+            <div class="habit-item">
+                <input type="checkbox" id="habit4" checked>
+                <label for="habit4">Meditate</label>
+            </div>
+            <button class="add-habit-btn">+ Add Habit</button>
+        </section>
+
+        <!-- Stats Section-->
+        <section>
+            <button class="share-btn">Share</button>
+            <h2>Stats</h2>
+            <div><strong>Today:</strong> 4/4</div>
+            <div><strong>Streak:</strong> 🔥 7 days</div>
+    
+            <div class="bar">
+            <div class="bar-label">Wake up early</div>
+            <div class="bar-track">
+                <div class="bar-fill green"></div>
+            </div>
+            <span>6/7</span>
+            </div>
+    
+            <div class="bar">
+            <div class="bar-label">Drink water</div>
+            <div class="bar-track">
+                <div class="bar-fill red"></div>
+            </div>
+            <span>7/7</span>
+            </div>
+    
+            <div class="bar">
+            <div class="bar-label">No takeout</div>
+            <div class="bar-track">
+                <div class="bar-fill blue"></div>
+            </div>
+            <span>7/7</span>
+            </div>
+    
+            <div class="bar">
+            <div class="bar-label">Meditate</div>
+            <div class="bar-track">
+                <div class="bar-fill purple"></div>
+            </div>
+            <span>6/7</span>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
