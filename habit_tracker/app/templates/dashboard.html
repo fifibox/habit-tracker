@@ -1,244 +1,162 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <!-- Import Inter font from Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        .outer-container {
-            width:90vw; /* Forces full width */
-            height:85vh; /* Forces full height */
-            margin: 1.5rem 2rem 1.5rem 2rem;
-            padding: 20px 0;
-            border-radius: 3px;
-            border:3px solid black;
-            box-shadow: 4px 4px 0 4px rgba(0, 0, 0, 0.3);
-            position: relative; /* Set relative positioning for child elements */
-            overflow: auto; /* Hide overflow */
-        
-        }
+{% extends "base.html" %}
 
-        body {  
-            font-family: 'Inter', sans-serif;
-            /* Dotted background pattern */
-            background-image: radial-gradient(#ccc 1.5px, transparent 1px);
-            background-size: 27px 27px;
-            overflow: hidden; /* Prevent body from scrolling */
-            }
+{% block title %}Dashboard{% endblock %}
 
-        /* Nav Bar */
-        .navbar {
-        position: relative;       /* Add a gap on the bottom */
-        width:100%;
-        background-color: transparent; 
+{% block style %}<style>
+
+        .container {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 0 1.5rem 0;
-        border-bottom: 3px solid black;
+        gap: 40px;
         flex-wrap: wrap;
-        margin-bottom: 40px;
+        justify-content: center;  
         }
 
-        .navbar-left{
+        section {
+        border: 4px solid black;
+        border-radius: 10px;
+        padding: 20px;
+        background-color: white;
+        box-shadow: 4px 4px 0 4px rgba(0, 0, 0, 0.3);
+        width: 450px;
+        margin: 0 2rem;
+        }
+        h1 {
+            margin-top: 10px;
+        }
+
+        .habit-item {
+        margin: 15px 0;
+        font-size: 1.2rem; 
+        }
+
+        .share-btn {
+        padding: 8px 16px;
+        background-color: white;
+        border: 3.5px solid black;
+        border-radius: 25px;
+        cursor: pointer;
+        box-shadow: 2px 2px 0 2px rgba(0,0,0,0.4);
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;     /* Semi Bold */
+        font-size: 18px;
+        }
+
+        .add-habit-btn{
+        margin-top: 20px;
+        padding: 8px 20px;
+        border-radius: 8px;
+        background-color: white;
+        border: 2px solid black;
+        box-shadow: 2px 2px 0 2px rgba(0,0,0,0.4);
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;     /* Semi Bold */
+        font-size: 18px;
+        cursor: pointer;
+        }
+
+        .stats-line {
+        margin: 15px 0;
+        }
+
+        .bar {
         display: flex;
-        gap: 1rem;
-        margin-left:25px;
-
-        }
-        .navbar-right {
-        display: flex;
-        gap: 1rem;
-        margin-right:25px;
+        align-items: center;
+        margin-top:20px;
         }
 
-        .nav-btn {
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            font-size: 20px;
-            padding: 10px 20px;
-            border-radius: 50px;
-            background-color: white;
-            border: 4px solid black;
-            box-shadow: 4px 4px 0 4px rgba(0, 0, 0, 0.3); /* x y blur spread color */
-            cursor: pointer;
-            transition: all 0.2s ease;
-            }
-
-            /* highlight the dashboard button */
-            .btn-active {
-            background-color: #FBCEB1;
-            }
-
-            .container {
-            display: flex;
-            gap: 40px;
-            flex-wrap: wrap;
-            justify-content: center;  
-            }
-
-            section {
-            border: 4px solid black;
-            border-radius: 10px;
-            padding: 20px;
-            background-color: white;
-            box-shadow: 4px 4px 0 4px rgba(0, 0, 0, 0.3);
-            width: 450px;
-            margin: 0 2rem;
-            }
-            h1 {
-                margin-top: 10px;
-            }
-
-            .habit-item {
-            margin: 15px 0;
-            font-size: 1.2rem; 
-            }
-
-            .share-btn {
-            padding: 8px 16px;
-            background-color: white;
-            border: 3.5px solid black;
-            border-radius: 25px;
-            cursor: pointer;
-            box-shadow: 2px 2px 0 2px rgba(0,0,0,0.4);
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;     /* Semi Bold */
-            font-size: 18px;
-            }
-
-            .add-habit-btn{
-            margin-top: 20px;
-            padding: 8px 20px;
-            border-radius: 8px;
-            background-color: white;
-            border: 2px solid black;
-            box-shadow: 2px 2px 0 2px rgba(0,0,0,0.4);
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;     /* Semi Bold */
-            font-size: 18px;
-            cursor: pointer;
-            }
-
-            .stats-line {
-            margin: 15px 0;
-            }
-
-            .bar {
-            display: flex;
-            align-items: center;
-            margin-top:20px;
-            }
-
-            .bar-label {
-            width: 120px;
-            }
-
-            .bar-track {
-            height: 12px;
-            background-color: #ddd;
-            border: 2px solid black;
-            flex-grow: 1;
-            margin-right: 8px;
-            position: relative;
-            }
-
-            .bar-fill {
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            }
-
-            .green { background-color: #34BB61; width: 86%; } /* 6/7 */
-            .red { background-color: #FF786F; width: 100%; } /* 7/7 */
-            .blue { background-color: #0D99FF; width: 100%; }
-            .purple { background-color: #AF75F1; width: 86%; }
-
-            .share-btn {
-                float:right;
-            }
-
-             /* Steak progress bar */
-            .progress-container {
-            width: calc(100% - 3rem); /* Full width minus the gap on both sides */
-            height: 20px;
-            background-color: #ddd;
-            border: 2px solid black;
-            box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
-            order: 2;            /* Makes sure it goes after the two boxes */
-            position: absolute; /* Position it relative to the outer-container */    
-            bottom: 1.5rem;       /* Add a gap on the bottom */
-            margin:0 1.5rem;
+        .bar-label {
+        width: 120px;
         }
 
-            .progress-fill {
-            width: 25%;
-            height: 20px;
-            background-color: #f7e17c;
+        .bar-track {
+        height: 12px;
+        background-color: #ddd;
+        border: 2px solid black;
+        flex-grow: 1;
+        margin-right: 8px;
+        position: relative;
+        }
+
+        .bar-fill {
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        }
+
+        .green { background-color: #34BB61; width: 86%; } /* 6/7 */
+        .red { background-color: #FF786F; width: 100%; } /* 7/7 */
+        .blue { background-color: #0D99FF; width: 100%; }
+        .purple { background-color: #AF75F1; width: 86%; }
+
+         /* Steak progress bar */
+        .progress-container {
+        width: calc(100% - 3rem); /* Full width minus the gap on both sides */
+        height: 20px;
+        background-color: #ddd;
+        border: 2px solid black;
+        box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+        order: 2;            /* Makes sure it goes after the two boxes */
+        position: absolute; /* Position it relative to the outer-container */    
+        bottom: 1.5rem;       /* Add a gap on the bottom */
+        margin:0 1.5rem;
+    }
+
+        .progress-fill {
+        width: 25%;
+        height: 20px;
+        background-color: #f7e17c;
+        display: block;
+        }
+        
+
+        .progress-icon {
+        position: absolute;
+        top: -22px;
+        left: 25%;
+        transform: translateX(-50%);
+        font-size: 18px;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 1300px) {
+            section{
+                max-width:350px;
             }
+        }
 
-            .progress-icon {
-            position: absolute;
-            top: -22px;
-            left: 25%;
-            transform: translateX(-50%);
-            font-size: 18px;
+        @media (max-width: 1070px) {
+            section{
+                max-width:320px;
+                margin:0;
             }
+        }
 
-            /* Responsive styles */
-            @media (max-width: 1300px) {
-                section{
-                    max-width:350px;
-                }
+        @media (max-width: 890px) {
+            section{
+                max-width:400px;
+                margin:0 50px;
             }
+        }
 
-            @media (max-width: 1070px) {
-                section{
-                    max-width:320px;
-                    margin:0;
-                }
+        @media (max-width: 862px) {
+            .progress-container{
+                margin-top:2rem;
+                width: 70%; /* Full width minus the gap on both sides */
+                position: relative;
             }
+        }
+    </style>{% endblock %}
 
-            @media (max-width: 890px) {
-                section{
-                    max-width:400px;
-                    margin:0 50px;
-                }
-            }
+{% block script %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+{% endblock %}
 
-            @media (max-width: 862px) {
-                .progress-container{
-                    margin-top:2rem;
-                    width: 70%; /* Full width minus the gap on both sides */
-                    position: relative;
-                }
-
-                .navbar-right {
-                    display: none; /* Hide the right side of the navbar */
-                }
-            }
-        </style>
-</head>
-<body>
-    <div class="outer-container">
-    <!-- placeholder for nav bar  -->
-    <nav class="navbar">
-        <div class="navbar-left">
-          <button class="nav-btn btn-active">Dashboard</button>
-        </div>
-        <div class="navbar-right">
-          <button class="nav-btn">Weekly</button>
-          <button class="nav-btn">Monthly</button>
-          <button class="nav-btn">Yearly</button>
-          <button class="nav-btn">Logout</button>
-        </div>
-    </nav>
-
-    <!-- Daily habit section -->
+{% block content %}
     <div class="container"> 
+        <!-- Daily habit section -->
         <section id="daily-habits">
             <h1>Daily Habits</h1>
             <div class="habit-item">
@@ -304,6 +222,4 @@
             <div class="progress-icon">🔥</div>
           </div>
     </div>
-    </div>
-</body>
-</html>
+{% endblock %}
