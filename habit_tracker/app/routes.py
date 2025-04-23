@@ -20,3 +20,20 @@ def monthly():
 @app.route('/yearly')
 def yearly():
     return render_template('yearly.html', active_page='yearly')
+
+@app.route('/login', methods=['POST'])
+def login():
+    email = request.form['email']
+    password = request.form['password']
+    # TODO: Authenticate user
+    flash("Login attempted")
+    return redirect(url_for('index'))
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    username = request.form['username']
+    email = request.form['email']
+    password = request.form['password']
+    # TODO: Register user
+    flash("Signup attempted")
+    return redirect(url_for('index'))
