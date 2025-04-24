@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Habit tracker{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <!-- Import Inter font from Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <!-- font awesome icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+  {% block style %}{% endblock %}
+</head>
+<body>
+  <div class="outer-container">
+    <!-- Common navbar code -->
+    <nav class="navbar">
+      <div class="navbar-left">
+        <button class="nav-btn {% if active_page == 'dashboard' %}btn-active{% endif %}">Dashboard</button>
+      </div>
+      <div class="navbar-right">
+        <button class="nav-btn {% if active_page == 'weekly' %}btn-active{% endif %}">Weekly</button>
+        <button class="nav-btn {% if active_page == 'monthly' %}btn-active{% endif %}">Monthly</button>
+        <button class="nav-btn {% if active_page == 'yearly' %}btn-active{% endif %}">Yearly</button>
+        <button class="nav-btn {% if active_page == 'logout' %}btn-active{% endif %}">Logout</button>
+        
+      </div>
+  </nav>
+
+    {% block content %}
+    <!-- Page-specific content goes here -->
+    {% endblock %}
+
+  </div>
+</body>
+</html>

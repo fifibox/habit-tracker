@@ -1,0 +1,164 @@
+/* Basic Styling */
+body {  
+    font-family: 'Inter', sans-serif;
+    background-image: radial-gradient(#ccc 1.5px, transparent 1px); /* Dotted background pattern */
+    background-size: 27px 27px;
+    overflow: hidden; /* Prevent body from scrolling */
+  }
+
+  .outer-container {
+    max-width: 95%;
+    display:flex;
+    flex-direction:column;
+    justify-content: space-between;
+    width:100vw; 
+    height:92vh; 
+    margin:2rem 1rem 1rem 2rem;
+    padding: 20px 0;
+    border-radius: 3px;
+    border:3px solid black;
+    box-shadow: 4px 4px 0 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Nav Bar */
+.navbar {
+  width:100%;
+  background-color: transparent; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0 1.5rem 0;
+  border-bottom: 3px solid black;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+  }
+  
+  h1 {
+    font-size: 4rem;
+  }
+  
+  /* Navbar Styling */
+  .navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: black;
+  }
+
+  .nav-btn {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    padding: 10px 20px;
+    border-radius: 50px;
+    background-color: white;
+    border: 4px solid black;
+    box-shadow: 4px 4px 0 4px rgba(0, 0, 0, 0.3); /* shadow */
+    cursor: pointer;
+    margin:0 10px;
+    }
+
+  /* Footer Styling */
+  footer p {
+    font-size: 1.5rem; 
+    color: #4f4f4f;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 767px) {
+    h1 {
+      font-size: 2.5rem;
+    }
+    footer p {
+      font-size: 1.25rem; 
+    }
+  }
+
+/* Login form Styling */
+.form-popup {
+  display: none;            /* hidden by default */
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  justify-content: center;  /* center the modal */
+  align-items: center;      /* center the modal */
+  z-index: 1000;
+  animation: fadeIn 0.3s forwards;
+}
+
+@keyframes fadeIn {
+  to { 
+    background: rgba(0, 0, 0, 0.3); /* semi-transparent background */
+    backdrop-filter: blur(2px); /* Add blur effect */
+  }
+}
+
+/* add style to the form container */
+.form-content {
+  background: white;
+  padding: 2rem;
+  border: 3px solid black;
+  border-radius: 12px;
+  box-shadow: 6px 6px 0px #888;
+  width: 320px;
+  position: relative;
+  animation: popupScale 0.3s ease-out forwards;
+}
+
+@keyframes popupScale {
+  0% {
+    transform: scale(0.6); /* Start smaller */
+    opacity: 0; /* Start invisible */
+  }
+  100% {
+    transform: scale(1); /* End at normal size */
+    opacity: 1; /* Fully visible */
+  }
+}
+
+/* Inputs */
+.form-content input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 1rem;
+  border: 3px solid black;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+/* Button */
+.form-btn {
+  font-weight: bold;
+  font-size: 16px;
+  border: 3px solid black;
+  border-radius: 999px;
+  background: #FFCBDB;
+  box-shadow: 4px 4px 0px #888;
+  cursor: pointer;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 10px;
+}
+
+/* Button click effect */
+.form-btn:active {
+  transform: scale(0.95);
+  box-shadow: 2px 2px 0px #444;
+}
+
+/* Close Button */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: 3px solid black;
+  border-radius: 999px;
+  background: white;
+  font-size: 20px;
+  width: 32px;
+  height: 32px;
+  text-align: center;
+  line-height: 25px;
+  cursor: pointer;
+}
