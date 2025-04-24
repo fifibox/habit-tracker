@@ -9,3 +9,7 @@ app = Flask(__name__, static_folder=os.path.join(os.getcwd(), 'static'))
 
 # Import your routes after app is initialized
 from app import routes
+
+@app.route('/yearly')
+def login():
+    return render_template('yearly.html')
