@@ -1,80 +1,71 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
-<!-- CSS style sheet  -->
-{% block style %}<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">{% endblock %}
+
+<!-- CSS style sheet -->
+{% block style %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
 
 {% block script %}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 {% endblock %}
 
 {% block content %}
-    <div class="container"> 
+    <div class="container">
         <!-- Daily habit section -->
         <section id="daily-habits">
             <h1>Daily Habits</h1>
+            
+            <!-- Dynamic habits list -->
+            {% for habit in habits %}
             <div class="habit-item">
-                <input type="checkbox" id="habit1" checked>
-                <label for="habit1">Wake up early</label>
+                <!-- Habit checkbox and label -->
+                <form action="{{ url_for('main.toggle_habit', habit_id=habit.id) }}" method="POST" class="toggle-form">
+                    <input type="checkbox" id="habit{{ habit.id }}" {% if habit.completed %}checked{% endif %} onchange="this.form.submit()">
+                    <label for="habit{{ habit.id }}">{{ habit.name }}</label>
+                </form>
+                
+                <!-- Delete habit button -->
+                <form action="{{ url_for('main.delete_habit', habit_id=habit.id) }}" method="POST" style="display:inline;">
+                    <button type="submit" class="delete-btn" onclick="return confirm('Are you sure you want to delete this habit?');">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
             </div>
-            <div class="habit-item">
-                <input type="checkbox" id="habit2" checked>
-                <label for="habit2">Drink water</label>
-            </div>
-            <div class="habit-item">
-                <input type="checkbox" id="habit3" checked>
-                <label for="habit3">No takeout</label>
-            </div>
-            <div class="habit-item">
-                <input type="checkbox" id="habit4" checked>
-                <label for="habit4">Meditate</label>
-            </div>
-            <button class="add-habit-btn">+ Add Habit</button>
+            {% endfor %}
+            
+            <!-- Add new habit form -->
+            <form action="{{ url_for('main.create_habit') }}" method="POST" class="add-habit-form">
+                <input type="text" name="habit_name" placeholder="New habit name" required>
+                <button type="submit" class="add-habit-btn">+ Add Habit</button>
+            </form>
         </section>
 
         <!-- Stats Section-->
         <section>
             <button class="share-btn">Share</button>
             <h1>Stats</h1>
-            <div class="stats-line"><strong>Today:</strong> 4/4</div>
-            <div class="stats-line"><strong>Streak:</strong> 🔥 7 days</div>
+            <div class="stats-line"><strong>Today:</strong> {{ completed_count }}/{{ total_habits }}</div>
+            <div class="stats-line"><strong>Streak:</strong> 🔥 {{ max_streak }} days</div>
     
+            <!-- Dynamic progress bars -->
+            {% for habit in habits %}
             <div class="bar">
-            <div class="bar-label">Wake up early</div>
-            <div class="bar-track">
-                <div class="bar-fill green"></div>
+                <div class="bar-label">{{ habit.name }}</div>
+                <div class="bar-track">
+                    <div class="bar-fill {{ habit.color_class }}" style="width: {{ habit.completion_percent }}%;"></div>
+                </div>
+                <span>{{ habit.completion_rate }}</span>
             </div>
-            <span>6/7</span>
-            </div>
-    
-            <div class="bar">
-            <div class="bar-label">Drink water</div>
-            <div class="bar-track">
-                <div class="bar-fill red"></div>
-            </div>
-            <span>7/7</span>
-            </div>
-    
-            <div class="bar">
-            <div class="bar-label">No takeout</div>
-            <div class="bar-track">
-                <div class="bar-fill blue"></div>
-            </div>
-            <span>7/7</span>
-            </div>
-    
-            <div class="bar">
-            <div class="bar-label">Meditate</div>
-            <div class="bar-track">
-                <div class="bar-fill purple"></div>
-            </div>
-            <span>6/7</span>
-            </div>
+            {% endfor %}
         </section>
+        
+        <!-- Progress bar at the bottom -->
         <div class="progress-container" style="flex-basis: 100%;">
-            <div class="progress-fill"></div>
+            <div class="progress-fill" style="width: {{ max_streak * 5 }}%;"></div>
             <div class="progress-icon">🔥</div>
-          </div>
+        </div>
     </div>
 {% endblock %}
