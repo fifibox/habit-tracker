@@ -18,9 +18,9 @@ function generateGridCells(containerId, year, habitData) {
             
             // Only show cells for Monday (1), Wednesday (3), and Friday (5)
             const relevantDays = {
-                'monday-grid': 1,
-                'wednesday-grid': 3,
-                'friday-grid': 5,
+                'monday-grid-early': 1,
+                'wednesday-grid-early': 3,
+                'friday-grid-early': 5,
                 'monday-grid-water': 1,
                 'wednesday-grid-water': 3,
                 'friday-grid-water': 5,
@@ -111,7 +111,7 @@ async function getHabitMappings() {
             
             if (name.includes('water') || name.includes('drink')) {
                 suffix = '-water';
-            } else if (name.includes('takeout') || name.includes('take out')) {
+            } else if (name.includes('takeout') || name.includes('takeout')) {
                 suffix = '-takeout';
             } else if (name.includes('meditate') || name.includes('meditation')) {
                 suffix = '-meditate';
@@ -136,22 +136,22 @@ async function getHabitMappings() {
 // Default mappings to use as fallback
 const defaultHabitMappings = [
     {
-        id: 1, 
+        id: 4, 
         name: "Wake up early",
-        grids: ["monday-grid", "wednesday-grid", "friday-grid"]
+        grids: ["monday-grid-early", "wednesday-grid-early", "friday-grid-early"]
     },
     {
-        id: 2, 
+        id: 5, 
         name: "Drink water",
         grids: ["monday-grid-water", "wednesday-grid-water", "friday-grid-water"]
     },
     {
-        id: 3, 
-        name: "No take out",
+        id: 6, 
+        name: "No takeout",
         grids: ["monday-grid-takeout", "wednesday-grid-takeout", "friday-grid-takeout"]
     },
     {
-        id: 4, 
+        id: 7, 
         name: "Meditate",
         grids: ["monday-grid-meditate", "wednesday-grid-meditate", "friday-grid-meditate"]
     }
@@ -216,8 +216,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     });
     
-    // Initialize with 2025 (default active year)
-    initializeGrids(2025, habitMappings);
+    // Initialize with default active year
+    const activeYearButton = document.querySelector('.year-button.active');
+    const defaultYear = activeYearButton ? parseInt(activeYearButton.getAttribute('data-year')) : 2025;
+
+    // Initialize grids with the default year
+    initializeGrids(defaultYear);
     
     // Share button functionality
     document.querySelectorAll('.share-btn').forEach(btn => {
