@@ -56,7 +56,6 @@ body {
         cursor: pointer;
         transition: all 0.2s ease;
         }
-    
     /* highlight the active button */
     .btn-active {
     background-color: #FBCEB1;
