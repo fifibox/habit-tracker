@@ -42,6 +42,7 @@ def create_default_habits(user_id):
     db.session.commit()
 
 def get_habit_color(habit_name):
+    _last_color_index = -1
     """Return the CSS color class based on habit name"""
     name_lower = habit_name.lower()
     if "wake" in name_lower or "early" in name_lower:
@@ -55,8 +56,8 @@ def get_habit_color(habit_name):
     
     # For other habits, cycle through colors
     colors = ["green", "red", "blue", "purple"]
-    # Use hash of name to determine color (for consistency)
-    return colors[hash(habit_name) % 4]
+    _last_color_index = (_last_color_index + 1) % 4
+    return colors[_last_color_index]
 
 def calculate_streak(habit_id):
     """Calculate current streak for a habit
