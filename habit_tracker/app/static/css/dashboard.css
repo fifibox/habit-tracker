@@ -19,9 +19,12 @@ h1 {
     margin-top: 10px;
     }
 
-.habit-item {
-    margin: 15px 0;
-    font-size: 1.2rem; 
+    .habit-item {
+        display: flex;
+        justify-content: space-between; 
+        align-items: center; 
+        margin: 15px 0;
+        font-size: 1.2rem;
     }
 
 .share-btn {
@@ -49,6 +52,20 @@ h1 {
     cursor: pointer;
     }
 
+/* Delete Button */
+.delete-btn {
+    background: none;
+    border: none;
+    color: #ff5555;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-left: 10px;
+}
+
+.delete-btn:hover {
+    color: #ff0000;
+}
+    
 .stats-line {
     margin: 15px 0;
     }
