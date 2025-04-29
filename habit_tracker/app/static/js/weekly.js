@@ -22,30 +22,34 @@ const centerTextPlugin = {
   
   document.addEventListener("DOMContentLoaded", function () {
     const chartsData = window.habitChartData || [];
-  
-    chartsData.forEach(habit => {
-      new Chart(document.getElementById(`chart-${habit.id}`), {
-        type: "doughnut",
-        data: {
-          labels: ["Completed", "Missed"],
-          datasets: [{
-            data: [habit.completed_days, habit.total_days - habit.completed_days],
-            backgroundColor: ["#4CAF50", "#e0e0e0"],
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          cutout: "70%",
-          plugins: {
-            legend: { display: false },
-            tooltip: { enabled: true }
-          }
-        },
-        plugins: [centerTextPlugin]
-      });
+    const colors = ["#34BB61", "#FF786F", "#AF75F1", "#0D99FF"]; // Define the colors array
+
+    chartsData.forEach((habit, index) => {
+        new Chart(document.getElementById(`chart-${habit.id}`), {
+            type: "doughnut",
+            data: {
+                labels: ["Completed", "Missed"],
+                datasets: [{
+                    data: [habit.completed_days, habit.total_days - habit.completed_days],
+                    backgroundColor: [
+                        colors[index % colors.length], // Assign color for "Completed"
+                        "#e0e0e0" // Default color for "Missed"
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: "70%",
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: true }
+                }
+            },
+            plugins: [centerTextPlugin]
+        });
     });
-  });
+});
 
 
 // function to send a share request
