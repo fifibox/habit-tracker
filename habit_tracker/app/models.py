@@ -45,3 +45,15 @@ class HabitRecord(db.Model):
     habit_id = db.Column(db.Integer, db.ForeignKey('habits.id'), nullable=False)
     date = db.Column(db.Date, nullable=False)
     completed = db.Column(db.Boolean, default=False)
+
+from datetime import datetime
+
+class SharedSnippet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    receiver_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    message = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_snippets')
+    receiver = db.relationship('User', foreign_keys=[receiver_id], backref='received_snippets')

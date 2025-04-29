@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_required, current_user
 from app import db
-from app.models import Habit, HabitRecord
+from app.models import Habit, HabitRecord, SharedSnippet, User
 from datetime import datetime, timedelta
 from . import main_bp
 
@@ -44,17 +44,6 @@ def create_default_habits(user_id):
 def get_habit_color(habit_name):
     _last_color_index = -1
     """Return the CSS color class based on habit name"""
-    name_lower = habit_name.lower()
-    if "wake" in name_lower or "early" in name_lower:
-        return "green"
-    elif "water" in name_lower or "drink" in name_lower:
-        return "red"
-    elif "takeout" in name_lower or "food" in name_lower:
-        return "blue"
-    elif "meditate" in name_lower or "meditation" in name_lower:
-        return "purple"
-    
-    # For other habits, cycle through colors
     colors = ["green", "red", "blue", "purple"]
     _last_color_index = (_last_color_index + 1) % 4
     return colors[_last_color_index]
@@ -471,3 +460,28 @@ def get_habit_data_api(habit_id):
         }
     
     return jsonify(result)
+
+# ------------------------------------------------------------------
+# Route for sharing charts
+# ------------------------------------------------------------------
+@main_bp.route('/share_snippet', methods=['POST'])
+@login_required
+def share_snippet():
+    receiver_username = request.form.get('receiver_username')
+    message = request.form.get('message')
+
+    receiver = User.query.filter_by(username=receiver_username).first()
+    if not receiver:
+        flash('User not found.', 'danger')
+        return redirect(url_for('main.dashboard'))
+
+    snippet = SharedSnippet(
+        sender_id=current_user.id,
+        receiver_id=receiver.id,
+        message=message
+    )
+    db.session.add(snippet)
+    db.session.commit()
+
+    flash('Shared successfully!', 'success')
+    return redirect(url_for('main.dashboard'))
