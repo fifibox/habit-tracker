@@ -1,76 +1,142 @@
-// Function to create GitHub-style contribution grid cells from backend data
-function generateGridCells(containerId, year, habitData) {
+// Function to create GitHub-style annual contribution grid
+function generateAnnualGrid(containerId, year, habitData) {
     const container = document.getElementById(containerId);
+    if (!container) {
+        console.error(`Container not found: ${containerId}`);
+        return;
+    }
+    
     container.innerHTML = '';
     
-    // Create 12 months (columns)
+    // Calculate first day of the year and total days
+    const firstDay = new Date(year, 0, 1);
+    const firstDayOfWeek = firstDay.getDay(); // 0 (Sunday) to 6 (Saturday)
+    const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+    const totalDays = isLeapYear ? 366 : 365;
+    
+    // Create day of week labels
+    const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const daysContainer = document.createElement('div');
+    daysContainer.className = 'day-labels';
+    
+    // Add a blank cell for the corner
+    const blankCell = document.createElement('div');
+    blankCell.className = 'blank-cell';
+    daysContainer.appendChild(blankCell);
+    
+    // Add day labels
+    dayLabels.forEach(day => {
+        const dayLabel = document.createElement('div');
+        dayLabel.className = 'day-label';
+        dayLabel.textContent = day;
+        daysContainer.appendChild(dayLabel);
+    });
+    
+    // Create grid container
+    const gridContainer = document.createElement('div');
+    gridContainer.className = 'grid-container';
+    
+    gridContainer.appendChild(daysContainer);
+    
+    // Create month labels
+    const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthsContainer = document.createElement('div');
+    monthsContainer.className = 'month-labels';
+    
+    // Calculate the column position for each month
+    const monthPositions = [];
     for (let month = 0; month < 12; month++) {
-        const column = document.createElement('div');
-        column.className = 'grid-column';
+        // Get the first day of the month
+        const firstDayOfMonth = new Date(year, month, 1);
         
-        // Determine days in each month for the given year
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        // Calculate days from the start of the year (January 1st)
+        const daysFromYearStart = Math.floor((firstDayOfMonth - firstDay) / (24 * 60 * 60 * 1000));
         
-        // Create cells for each day
-        for (let day = 1; day <= daysInMonth; day++) {
-            const date = new Date(year, month, day);
-            const dayOfWeek = date.getDay(); // 0 is Sunday, 1 is Monday, etc.
-            
-            // Only show cells for Monday (1), Wednesday (3), and Friday (5)
-            const relevantDays = {
-                'monday-grid': 1,
-                'wednesday-grid': 3,
-                'friday-grid': 5,
-                'monday-grid-water': 1,
-                'wednesday-grid-water': 3,
-                'friday-grid-water': 5,
-                'monday-grid-takeout': 1,
-                'wednesday-grid-takeout': 3,
-                'friday-grid-takeout': 5,
-                'monday-grid-meditate': 1,
-                'wednesday-grid-meditate': 3,
-                'friday-grid-meditate': 5
-            };
-            
-            if (dayOfWeek === relevantDays[containerId]) {
-                const cell = document.createElement('div');
-                cell.className = 'grid-cell';
-                
-                // Format date as YYYY-MM-DD for lookup
-                const formattedDate = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-                
-                // Check if we have data for this date in our habitData
-                if (habitData && habitData[formattedDate]) {
-                    const intensity = habitData[formattedDate].intensity;
-                    if (intensity > 0) {
-                        cell.classList.add(`cell-level-${intensity}`);
-                    }
-                    
-                    // Add tooltip with notes if available
-                    if (habitData[formattedDate].notes) {
-                        cell.setAttribute('title', habitData[formattedDate].notes);
-                    }
-                }
-                
-                column.appendChild(cell);
-            }
-        }
+        // Calculate column position (week number)
+        const weekNum = Math.floor((daysFromYearStart + firstDayOfWeek) / 7);
         
-        container.appendChild(column);
+        monthPositions.push(weekNum);
     }
+    
+    // Create month labels in the grid
+    for (let i = 0; i < 12; i++) {
+        const monthCell = document.createElement('div');
+        monthCell.className = 'month-label';
+        monthCell.textContent = monthLabels[i];
+        
+        monthCell.style.gridColumnStart = monthPositions[i] + 1; // +1 for CSS grid (1-based)
+        
+        monthsContainer.appendChild(monthCell);
+    }
+    
+    // Create cells grid (7 rows × ~53 columns)
+    const cellsGrid = document.createElement('div');
+    cellsGrid.className = 'cells-grid';
+    
+    // Total weeks needed (first partial week to last partial week)
+    const totalWeeks = Math.ceil((totalDays + firstDayOfWeek) / 7);
+    
+    // Create cells for the entire year
+    for (let day = 0; day < 7; day++) { // 7 days in a week (rows)
+        for (let week = 0; week < totalWeeks; week++) { // ~52-53 weeks (columns)
+            const dayNumber = week * 7 + day - firstDayOfWeek + 1;
+            const cell = document.createElement('div');
+            cell.className = 'grid-cell';
+            
+            if (dayNumber > 0 && dayNumber <= totalDays) {
+                // This is a valid day in the year
+                const date = new Date(year, 0, dayNumber);
+                const formattedDate = `${year}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+                
+                // Store the date as a data attribute for potential interactions
+                cell.setAttribute('data-date', formattedDate);
+                
+                // Check if we have data for this date
+                if (habitData && habitData[formattedDate] && habitData[formattedDate].intensity > 0) {
+                    cell.classList.add('completed');
+                    
+                    // Add tooltip with date and notes if available
+                    const tooltipText = habitData[formattedDate].notes 
+                        ? `${formattedDate}: ${habitData[formattedDate].notes}` 
+                        : formattedDate;
+                    
+                    cell.setAttribute('title', tooltipText);
+                } else {
+                    // Add tooltip with just the date
+                    cell.setAttribute('title', formattedDate);
+                }
+            } else {
+                // This cell is outside the year range
+                cell.classList.add('empty');
+            }
+            
+            cellsGrid.appendChild(cell);
+        }
+    }
+    
+    // Add all components to the container
+    gridContainer.appendChild(monthsContainer);
+    gridContainer.appendChild(cellsGrid);
+    container.appendChild(gridContainer);
 }
 
 // Function to fetch habit data from backend
 async function fetchHabitData(habitId, year) {
     try {
+        console.log(`Fetching data for habit ${habitId}, year ${year}...`);
+        
         // Make API request to get habit data for the specified year
         const response = await fetch(`/api/habits/${habitId}/data?year=${year}`);
         
         if (!response.ok) {
+            console.error(`Error response: ${response.status} ${response.statusText}`);
+            const errorText = await response.text();
+            console.error(`Error details: ${errorText}`);
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         
         const data = await response.json();
+        console.log(`Data received for habit ${habitId}`);
         return data;
     } catch (error) {
         console.error(`Error fetching data for habit ${habitId}:`, error);
@@ -94,112 +160,44 @@ async function fetchHabits() {
     }
 }
 
-// Function to get habit mappings dynamically
-async function getHabitMappings() {
+// Initialize grids for all habits
+async function initializeGrids(year) {
     try {
-        const habits = await fetchHabits();
+        // Get all habit containers
+        const habitContainers = document.querySelectorAll('.habit-container');
         
-        if (habits.length === 0) {
-            // Fall back to default mappings if no habits found
-            return defaultHabitMappings;
-        }
-        
-        // Create custom mappings based on habit names
-        return habits.map(habit => {
-            const name = habit.name.toLowerCase();
-            let suffix = '';
+        // Process each habit container
+        for (const container of habitContainers) {
+            // Get habit title and ID
+            const titleElement = container.querySelector('.habit-title');
+            const gridElement = container.querySelector('.github-style-grid');
             
-            if (name.includes('water') || name.includes('drink')) {
-                suffix = '-water';
-            } else if (name.includes('takeout') || name.includes('take out')) {
-                suffix = '-takeout';
-            } else if (name.includes('meditate') || name.includes('meditation')) {
-                suffix = '-meditate';
-            }
+            if (!titleElement || !gridElement) continue;
             
-            return {
-                id: habit.id,
-                name: habit.name,
-                grids: [
-                    `monday-grid${suffix}`,
-                    `wednesday-grid${suffix}`,
-                    `friday-grid${suffix}`
-                ]
-            };
-        });
-    } catch (error) {
-        console.error('Error creating habit mappings:', error);
-        return defaultHabitMappings;
-    }
-}
-
-// Default mappings to use as fallback
-const defaultHabitMappings = [
-    {
-        id: 1, 
-        name: "Wake up early",
-        grids: ["monday-grid", "wednesday-grid", "friday-grid"]
-    },
-    {
-        id: 2, 
-        name: "Drink water",
-        grids: ["monday-grid-water", "wednesday-grid-water", "friday-grid-water"]
-    },
-    {
-        id: 3, 
-        name: "No take out",
-        grids: ["monday-grid-takeout", "wednesday-grid-takeout", "friday-grid-takeout"]
-    },
-    {
-        id: 4, 
-        name: "Meditate",
-        grids: ["monday-grid-meditate", "wednesday-grid-meditate", "friday-grid-meditate"]
-    }
-];
-
-// Initialize all grids with backend data
-async function initializeGrids(year, habitMappings) {
-    // If no mappings provided, use default mappings
-    const mappings = habitMappings || defaultHabitMappings;
-    
-    // Show loading state (optional)
-    const gridContainers = document.querySelectorAll('.grid-cells');
-    gridContainers.forEach(container => {
-        container.innerHTML = '<div class="loading">Loading data...</div>';
-    });
-    
-    // Fetch and display data for each habit
-    for (const habit of mappings) {
-        try {
+            const habitName = titleElement.textContent.trim();
+            const habitId = gridElement.id.replace('grid-', '');
+            
+            console.log(`Processing habit: ${habitName}, ID: ${habitId}`);
+            
+            // Show loading state
+            gridElement.innerHTML = '<div style="text-align: center; padding: 20px;">Loading data...</div>';
+            
             // Fetch data for this habit
-            const habitData = await fetchHabitData(habit.id, year);
+            const habitData = await fetchHabitData(habitId, year);
             
-            // Update all grid elements for this habit
-            for (const gridId of habit.grids) {
-                const container = document.getElementById(gridId);
-                if (container) {
-                    generateGridCells(gridId, year, habitData);
-                }
-            }
-        } catch (error) {
-            console.error(`Failed to initialize habit ${habit.name}:`, error);
-            
-            // Show error in grid
-            for (const gridId of habit.grids) {
-                const container = document.getElementById(gridId);
-                if (container) {
-                    container.innerHTML = '<div class="error">Failed to load data</div>';
-                }
-            }
+            // Generate the grid with the data
+            generateAnnualGrid(gridElement.id, year, habitData);
         }
+    } catch (error) {
+        console.error('Error initializing grids:', error);
+        document.querySelectorAll('.github-style-grid').forEach(grid => {
+            grid.innerHTML = '<div style="color: red; text-align: center; padding: 20px;">Error loading data</div>';
+        });
     }
 }
 
 // Year toggle functionality
-document.addEventListener('DOMContentLoaded', async function() {
-    // First get dynamic habit mappings
-    const habitMappings = await getHabitMappings();
-    
+document.addEventListener('DOMContentLoaded', function() {
     // Handle year button clicks
     document.querySelectorAll('.year-button').forEach(button => {
         button.addEventListener('click', function() {
@@ -212,27 +210,19 @@ document.addEventListener('DOMContentLoaded', async function() {
             this.classList.add('active');
             
             // Regenerate grids with selected year
-            initializeGrids(year, habitMappings);
+            initializeGrids(year);
         });
     });
     
-    // Initialize with 2025 (default active year)
-    initializeGrids(2025, habitMappings);
+    // Initialize with default active year
+    const activeYearButton = document.querySelector('.year-button.active');
+    const defaultYear = activeYearButton ? parseInt(activeYearButton.getAttribute('data-year')) : 2025;
+    
+    // Initialize grids with the default year
+    initializeGrids(defaultYear);
     
     // Share button functionality
-    document.querySelectorAll('.share-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            // Get the habit name from the closest heading
-            const habitTitle = this.closest('.habit-header')?.querySelector('.habit-title')?.textContent || 'this habit';
-            
-            // In a real app, you might generate a sharing link or open a dialog
-            alert(`Share your progress for "${habitTitle}"`);
-            
-            // Example of what a real sharing feature might do:
-            // 1. Generate a unique sharing URL
-            // 2. Copy to clipboard or open sharing dialog
-            // const shareUrl = `${window.location.origin}/share/habit/${habitId}`;
-            // navigator.clipboard.writeText(shareUrl);
-        });
+    document.querySelector('.share-btn').addEventListener('click', function() {
+        alert('Share your yearly progress');
     });
 });
