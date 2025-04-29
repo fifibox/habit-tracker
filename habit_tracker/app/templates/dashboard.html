@@ -16,7 +16,12 @@
         <!-- Daily habit section -->
         <section id="daily-habits">
             <h1>Daily Habits</h1>
-            
+            <!-- Add a "Select a Date" button -->
+            <div class="date-picker-container" style="margin-top: 20px;">
+                <label for="date-picker" style="font-weight: bold; margin-right: 10px;">Select a Date:</label>
+                <input type="date" id="date-picker" class="form-control" style="display: inline-block; width: auto;">
+                <button type="button" class="btn btn-primary" onclick="handleDateSelection()">go</button>
+            </div>
             <!-- Dynamic habits list -->
             {% for habit in habits %}
             <div class="habit-item">
@@ -52,7 +57,7 @@
                     <input type="hidden" name="message" value="Today: {{ today_completion }} habits completed. Streak: {{ streak }} days! 🚀">
                     <button type="button" class="nav-btn" data-toggle="modal" data-target="#usernameModal">Share</button>
                 </form>
-              </div>
+            </div>
             <div class="stats-line"><strong>Today:</strong> {{ completed_count }}/{{ total_habits }}</div>
             <!-- Doughnut chart to show today's completion -->
             <div style="width: 150px; height: 150px; margin-top: 10px;">
@@ -79,7 +84,6 @@
         </div>
     </div>
     
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         window.todayDone = {{ completed_count | default(0) }};
@@ -87,23 +91,6 @@
     </script>
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 
-    <!-- Modal for entering friend's username -->
-    <div class="modal fade" id="usernameModal" tabindex="-1" role="dialog" aria-labelledby="usernameModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="usernameModalLabel">Enter Friend's Username</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body mg-2">
-                    <input type="text" id="modal-username" class="form-control" required>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="submitShareForm()">Share</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Modal for share button -->
+    {% include 'share_modal.html' %}
 {% endblock %}

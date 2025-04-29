@@ -17,11 +17,15 @@ const doughnutChart = new Chart(ctx, {
     datasets: [{
       data: totalHabits === 0 ? [0, 1] : [todayDone, remaining],
       backgroundColor: ['#4CAF50', '#e0e0e0'],
-      borderWidth: 1
-    }]
+      borderColor: [
+        "black", 
+        "black"  
+      ],
+      borderWidth: 2 // Set border width to 2px
+      }]
   },
   options: {
-    cutout: '70%',
+    cutout: '65%',
     plugins: {
       legend: { display: false },
       tooltip: { enabled: false },
@@ -69,4 +73,22 @@ function submitShareForm() {
   } else {
       alert("Please enter a username.");
   }
-};
+}
+
+// Set the placeholder value of the date input to today's date
+document.addEventListener("DOMContentLoaded", function () {
+    const datePicker = document.getElementById('date-picker');
+    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+    datePicker.value = today; // Set the value of the date input to today's date
+})
+
+// Function to handle date selection
+    function handleDateSelection() {
+        const selectedDate = document.getElementById('date-picker').value;
+        if (selectedDate) {
+            alert(`You selected: ${selectedDate}`);
+            // Need to add logic here to handle the selected date
+        } else {
+            alert('Please select a date.');
+        }
+    }
