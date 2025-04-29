@@ -36,7 +36,8 @@ class Habit(db.Model):
     habit_name = db.Column(db.String(80), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
-    records = db.relationship('HabitRecord', backref='habit', lazy=True)
+    records = db.relationship('HabitRecord', backref='habit', lazy=True, 
+                             cascade='all, delete-orphan')
 
 class HabitRecord(db.Model):
     __tablename__ = 'habit_records'
