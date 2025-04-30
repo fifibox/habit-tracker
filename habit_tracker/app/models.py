@@ -1,15 +1,19 @@
 from app import db, login_manager
+from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-class User(UserMixin, db.Model):
+class User(UserMixin, db.Model):  
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
-
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_login = db.Column(db.DateTime, default=datetime.utcnow)
+    last_activity = db.Column(db.DateTime, default=datetime.utcnow)   
     habits = db.relationship('Habit', backref='user', lazy=True)
 
     def set_password(self, password: str) -> None:
@@ -25,7 +29,6 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
 @login_manager.user_loader
-
 def load_user(user_id):
     return User.query.get(int(user_id))
 
@@ -37,7 +40,8 @@ class Habit(db.Model):
     habit_name = db.Column(db.String(80), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
-    records = db.relationship('HabitRecord', backref='habit', lazy=True)
+    records = db.relationship('HabitRecord', backref='habit', lazy=True, 
+                             cascade='all, delete-orphan')
 
 class HabitRecord(db.Model):
     __tablename__ = 'habit_records'
@@ -46,3 +50,15 @@ class HabitRecord(db.Model):
     habit_id = db.Column(db.Integer, db.ForeignKey('habits.id'), nullable=False)
     date = db.Column(db.Date, nullable=False)
     completed = db.Column(db.Boolean, default=False)
+
+from datetime import datetime
+
+class SharedSnippet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    receiver_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    message = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_snippets')
+    receiver = db.relationship('User', foreign_keys=[receiver_id], backref='received_snippets')

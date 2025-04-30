@@ -1,58 +1,13 @@
+/* Core container styles */
 .container {
-    max-width: 1100px;
+    width: 90%;
     margin: 0 auto;
-    padding: 20px;
-    background-color: white;
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 40px;
     margin-top: 20px;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px 0;
-    border-bottom: 1px solid #eee;
-    margin-bottom: 20px;
-}
-
-.nav {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-}
-
-.nav-left {
-    display: flex;
-}
-
-.nav-center {
-    display: flex;
-    gap: 15px;
-}
-
-.nav-right {
-    display: flex;
-}
-
-.nav-button {
-    padding: 10px 20px;
+    border: 4px solid black;
+    border-radius: 10px;
     background-color: white;
-    border: 2px solid #333;
-    border-radius: 25px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-}
-
-.nav-button:hover {
-    background-color: #f5f5f5;
-}
-
-.nav-button.active {
-    background-color: #ffebda;
-    border-color: #ff9f66;
+    box-shadow: 4px 4px 0 4px rgba(0, 0, 0, 0.3);
 }
 
 .habit-container {
@@ -64,115 +19,110 @@
     margin-bottom: 15px;
 }
 
-.contribution-grid {
+.habit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+/* GitHub-style grid layout */
+.github-style-grid {
     border: 1px solid #eaeaea;
     border-radius: 6px;
-    padding: 15px;
+    padding: 20px;
     margin-bottom: 10px;
+    position: relative; /* Needed for absolute positioning */
 }
 
-.grid-header {
+/* Grid container */
+.grid-container {
     display: flex;
-    margin-bottom: 10px;
+    margin-left: 40px; /* Space for day labels */
 }
 
-.grid-header .month {
-    flex: 1;
-    text-align: center;
-    font-size: 0.8rem;
-    color: #666;
-}
-
-.grid-row {
+/* Day of week labels */
+.day-labels {
+    position: absolute;
+    left: 20px;
+    top: 50px; /* Align with grid cells */
     display: flex;
-    align-items: center;
-    margin-bottom: 4px;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .day-label {
-    width: 40px;
+    height: 15px;
+    line-height: 15px;
     text-align: right;
-    margin-right: 10px;
-    font-size: 0.8rem;
+    padding-right: 5px;
+    font-size: 12px;
     color: #666;
+    width: 30px;
 }
 
-.grid-cells {
+/* Month labels */
+.month-labels {
+    position: absolute;
+    top: 20px;
+    left: 60px; /* Align with grid cells */
     display: flex;
-    flex: 1;
+    width: calc(53 * 17px); /* Account for 53 columns plus gaps */
+    justify-content: space-between; /* Distribute months evenly */
+    padding-right: 15px; /* Add some padding on the right */
 }
 
-.grid-column {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
+.month-label {
+    font-size: 12px;
+    color: #666;
+    /* Remove padding-right since we're using space-between */
+    flex: 0 0 auto; /* Don't grow or shrink */
+}
+
+/* Cells grid */
+.cells-grid {
+    display: grid;
+    grid-template-columns: repeat(53, 15px);
+    grid-template-rows: repeat(7, 15px);
+    gap: 2px;
+    margin-top: 30px; /* Space for month labels */
 }
 
 .grid-cell {
-    height: 12px;
-    width: 12px;
-    margin: 2px;
+    width: 15px;
+    height: 15px;
     background-color: #ebedf0;
     border-radius: 2px;
 }
 
-.cell-level-1 {
-    background-color: #c6e48b;
-}
-
-.cell-level-2 {
-    background-color: #7bc96f;
-}
-
-.cell-level-3 {
+.grid-cell.completed {
     background-color: #239a3b;
 }
 
-.cell-level-4 {
-    background-color: #196127;
+.grid-cell.empty {
+    background-color: transparent;
 }
 
-.grid-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.8rem;
-    color: #666;
-    margin-top: 10px;
-}
-
-.intensity-legend {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.legend-label {
-    margin-right: 5px;
-}
-
-.legend-cell {
-    height: 10px;
-    width: 10px;
-    border-radius: 2px;
-}
-
+/* Year toggle and buttons */
 .year-toggle {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 15px;
+    margin-bottom: 25px;
+    gap: 10px;
 }
 
 .year-button {
-    padding: 5px 15px;
+    padding: 8px 20px;
     background-color: white;
-    border: 1px solid #ddd;
+    border: 2px solid #333;
+    border-radius: 5px;
     cursor: pointer;
+    font-weight: 500;
 }
 
 .year-button.active {
     font-weight: bold;
-    border-color: #333;
+    background-color: #f0f0f0;
 }
 
 .share-btn {
@@ -183,15 +133,42 @@
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s;
-    float: right;
 }
 
 .share-btn:hover {
     background-color: #f5f5f5;
 }
 
-.habit-header {
+/* Footer and legend */
+.grid-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 15px;
+}
+
+.intensity-legend {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.legend-label {
+    margin-right: 5px;
+}
+
+.legend-cell {
+    height: 12px;
+    width: 12px;
+    border-radius: 2px;
+}
+
+.legend-cell.not-completed {
+    background-color: #ebedf0;
+}
+
+.legend-cell.completed {
+    background-color: #239a3b;
 }
