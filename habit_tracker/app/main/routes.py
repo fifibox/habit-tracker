@@ -36,6 +36,9 @@ def dashboard():
     habit_data = []
     total_habits = len(habits)
     completed_count = 0
+
+    # Calculate streak
+    streak = calculate_streak(current_user.id)
     
     # For each habit, get completion status and statistics
     for habit in habits:
@@ -50,9 +53,6 @@ def dashboard():
         if is_completed:
             completed_count += 1
         
-        # Calculate streak
-        streak = calculate_streak(current_user.id)
-        
         # Calculate weekly completion (e.g., "6/7")
         completed_days, total_days = get_weekly_completion(habit.id)
         completion_rate = f"{completed_days}/{total_days}"
@@ -65,7 +65,6 @@ def dashboard():
             "id": habit.id,
             "name": habit.habit_name,
             "completed": is_completed,
-            "streak": streak,
             "completion_rate": completion_rate,
             "completion_percent": (completed_days / total_days * 100) if total_days > 0 else 0,
             "color_class": color_class
@@ -77,7 +76,7 @@ def dashboard():
         habits=habit_data,
         completed_count=completed_count,
         total_habits=total_habits,
-        max_streak=streak,
+        streak=streak,
     )
 
 @main_bp.route("/weekly")
@@ -96,6 +95,10 @@ def weekly():
     
     # Initialize habits data for the template
     habits_data = []
+
+    # Calculate streak
+    streak = calculate_streak(current_user.id)
+
     for habit in habits:
         # Get weekly completion data
         completed_days, total_days = get_weekly_completion(habit.id)
@@ -108,12 +111,12 @@ def weekly():
             "completed_days": completed_days,
             "total_days": total_days,
         })
-    
     return render_template(
         "weekly.html",
         active_page="weekly",
         habits=habits_data,
-        date_range=date_range
+        date_range=date_range,
+        streak=streak,
     )
 
 @main_bp.route("/monthly")
@@ -122,11 +125,15 @@ def monthly():
     """Render the monthly habits view"""
     # Get current user's habits
     habits = Habit.query.filter_by(user_id=current_user.id).all()
+
+    # Calculate streak
+    streak = calculate_streak(current_user.id)
     
     return render_template(
         "monthly.html",
         active_page="monthly",
-        habits=habits
+        habits=habits,
+        streak=streak,
     )
 
 @main_bp.route("/yearly")
@@ -135,11 +142,15 @@ def yearly():
     """Render the yearly habits view"""
     # Get current user's habits
     habits = Habit.query.filter_by(user_id=current_user.id).all()
+
+    # Calculate streak
+    streak = calculate_streak(current_user.id)
     
     return render_template(
         "yearly.html",
         active_page="yearly",
-        habits=habits
+        habits=habits,
+        streak=streak,
     )
 
 # ------------------------------------------------------------------
