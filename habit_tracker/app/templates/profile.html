@@ -13,10 +13,29 @@
     <main class="container">
         <section class="profile-container">
             <h2>User Information</h2>
-            <p><strong>Username:</strong> {{ user.username }}</p>
-            <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>Account Created:</strong> {{ user.created_at.strftime('%Y-%m-%d') }}</p>
-            <p><strong>Last Login:</strong> {{ user.last_login.strftime('%Y-%m-%d') }}</p>
+            {% if user.username %}
+                <p><strong>Username:</strong> {{ user.username }}</p>
+            {% else %}
+                <p><strong>Username:</strong> Not provided</p>
+            {% endif %}
+            {% if user.email %}
+                <p><strong>Email:</strong> {{ user.email }}</p>
+            {% else %}
+                <p><strong>Email:</strong> Not provided</p>
+            {% endif %}
+            <p><strong>Account Created:</strong> 
+                {% if user.created_at %}
+                    {{ user.created_at.strftime('%Y-%m-%d') }}</p>
+                {% else %}
+                    <p>No account created date available.</p>
+                {% endif %}
+            <p><strong>Last Login:</strong> 
+                {% if user.last_login %}
+                    {{ user.last_login.strftime('%Y-%m-%d') }}
+                {% else %}
+                    Not recorded
+                {% endif %}
+            </p>
 
         </section>
 
@@ -25,7 +44,7 @@
                 <label for="new-username">New Username:</label>
                 <input type="text" id="new-username" name="new_username" required>
                 <button type="submit">Update Username</button>
-                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% with messages = get_flashed_messages(with_categories=true, category_filter=['profile', 'profile_error']) %}
                     {% if messages %}
                         <ul class="flashes">
                             {% for category, message in messages %}
@@ -39,15 +58,17 @@
                 <label for="new-email">New Email:</label>
                 <input type="email" id="new-email" name="new_email" required>
                 <button type="submit">Update Email</button>
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    <ul class="flashes">
-                        {% for category, message in messages %}
-                            <li class="{{ category }}">{{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            {% endwith %}
+                
+                {% with messages = get_flashed_messages(with_categories=true, category_filter=['profile', 'profile_error']) %}
+                    {% if messages %}
+                        <ul class="flashes">
+                            {% for category, message in messages %}
+                                <li class="{{ category }}">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+
             </form>
             <form action="/update_password" method="POST">
                 <label for="current-password">Current Password:</label>
@@ -55,15 +76,15 @@
                 <label for="new-password">New Password:</label>
                 <input type="password" id="new-password" name="new_password" required>
                 <button type="submit">Update Password</button>
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    <ul class="flashes">
-                        {% for category, message in messages %}
-                            <li class="{{ category }}">{{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            {% endwith %}
+                {% with messages = get_flashed_messages(with_categories=true, category_filter=['profile', 'profile_error']) %}
+                    {% if messages %}
+                        <ul class="flashes">
+                            {% for category, message in messages %}
+                                <li class="{{ category }}">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
             </form>
         </section>
 
