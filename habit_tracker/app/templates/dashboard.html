@@ -63,7 +63,7 @@
             <div style="width: 150px; height: 150px; margin-top: 10px;">
                 <canvas id="daily_completion"></canvas>
             </div>           
-            <div class="stats-line"><strong>Streak:</strong> 🔥 {{ max_streak }} days</div>
+            <div class="stats-line"><strong>Streak:</strong> 🔥 {{ streak }} days</div>
     
             <!-- Dynamic progress bars -->
             {% for habit in habits %}
@@ -75,13 +75,7 @@
                 <span>{{ habit.completion_rate }}</span>
             </div>
             {% endfor %}
-        </section>
-        
-        <!-- Streak progress bar at the bottom -->
-        <div class="progress-container" style="flex-basis: 100%;">
-            <div class="progress-fill" style="width: {{ max_streak * 5 }}%;"></div>
-            <div class="progress-icon" style="left: {{ max_streak * 5 }}%;">🔥</div>
-        </div>
+        </section>        
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

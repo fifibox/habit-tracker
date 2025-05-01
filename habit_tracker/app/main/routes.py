@@ -4,6 +4,7 @@ from app import db
 from app.models import Habit, HabitRecord, SharedSnippet, User
 from datetime import datetime, timedelta
 from . import main_bp
+from .controller import create_default_habits, get_habit_color, calculate_streak, get_weekly_completion
 
 # ------------------------------------------------------------------
 # Public landing page
@@ -12,114 +13,6 @@ from . import main_bp
 def home():
     """Render the landing page"""
     return render_template("index.html")
-
-# ------------------------------------------------------------------
-# Helper functions
-# ------------------------------------------------------------------
-def create_default_habits(user_id):
-    """Create default habits for new users"""
-    # Default habit names
-    default_habits = [
-        "Wake up early",
-        "Drink water",
-        "No takeout",
-        "Meditate"
-    ]
-    
-    # Check if user already has habits
-    existing_count = Habit.query.filter_by(user_id=user_id).count()
-    if existing_count > 0:
-        return  # User already has habits
-    
-    # Create default habits
-    for habit_name in default_habits:
-        habit = Habit(
-            habit_name=habit_name,
-            user_id=user_id
-        )
-        db.session.add(habit)
-    
-    db.session.commit()
-
-def get_habit_color(habit_name):
-    _last_color_index = -1
-    """Return the CSS color class based on habit name"""
-    colors = ["green", "red", "blue", "purple"]
-    _last_color_index = (_last_color_index + 1) % 4
-    return colors[_last_color_index]
-
-def calculate_streak(habit_id):
-    """Calculate current streak for a habit
-    
-    Returns the number of consecutive days the habit has been completed
-    leading up to today.
-    """
-    today = datetime.now().date()
-    
-    # Check if habit was completed today
-    today_record = HabitRecord.query.filter_by(
-        habit_id=habit_id,
-        date=today,
-        completed=True
-    ).first()
-    
-    if not today_record:
-        # Check if there's a streak that ended yesterday
-        yesterday = today - timedelta(days=1)
-        yesterday_record = HabitRecord.query.filter_by(
-            habit_id=habit_id,
-            date=yesterday,
-            completed=True
-        ).first()
-        
-        if not yesterday_record:
-            return 0
-        
-        # Count streak days that ended yesterday
-        streak = 1
-        current_date = yesterday - timedelta(days=1)
-    else:
-        # Count streak days including today
-        streak = 1
-        current_date = today - timedelta(days=1)
-    
-    # Count consecutive days going backward
-    while True:
-        record = HabitRecord.query.filter_by(
-            habit_id=habit_id,
-            date=current_date,
-            completed=True
-        ).first()
-        
-        if not record:
-            break
-            
-        streak += 1
-        current_date -= timedelta(days=1)
-    
-    return streak
-
-def get_weekly_completion(habit_id):
-    """Get weekly completion data for a habit
-    
-    Returns tuple: (completed_days, total_days)
-    """
-    today = datetime.now().date()
-    start_date = today - timedelta(days=6)  # Last 7 days including today
-    
-    # Get all habit records in date range
-    records = HabitRecord.query.filter(
-        HabitRecord.habit_id == habit_id,
-        HabitRecord.date >= start_date,
-        HabitRecord.date <= today,
-        HabitRecord.completed == True
-    ).all()
-    
-    completed_days = len(records)
-    total_days = 7  # Last 7 days
-    
-    return (completed_days, total_days)
-
 
 # ------------------------------------------------------------------
 # Auth-protected pages
@@ -143,6 +36,9 @@ def dashboard():
     habit_data = []
     total_habits = len(habits)
     completed_count = 0
+
+    # Calculate streak
+    streak = calculate_streak(current_user.id)
     
     # For each habit, get completion status and statistics
     for habit in habits:
@@ -157,9 +53,6 @@ def dashboard():
         if is_completed:
             completed_count += 1
         
-        # Calculate streak
-        streak = calculate_streak(habit.id)
-        
         # Calculate weekly completion (e.g., "6/7")
         completed_days, total_days = get_weekly_completion(habit.id)
         completion_rate = f"{completed_days}/{total_days}"
@@ -172,14 +65,10 @@ def dashboard():
             "id": habit.id,
             "name": habit.habit_name,
             "completed": is_completed,
-            "streak": streak,
             "completion_rate": completion_rate,
             "completion_percent": (completed_days / total_days * 100) if total_days > 0 else 0,
             "color_class": color_class
         })
-    
-    # Calculate max streak for progress bar
-    max_streak = max([h["streak"] for h in habit_data]) if habit_data else 0
     
     return render_template(
         "dashboard.html",
@@ -187,7 +76,7 @@ def dashboard():
         habits=habit_data,
         completed_count=completed_count,
         total_habits=total_habits,
-        max_streak=max_streak
+        streak=streak,
     )
 
 @main_bp.route("/weekly")
@@ -206,13 +95,14 @@ def weekly():
     
     # Initialize habits data for the template
     habits_data = []
+
+    # Calculate streak
+    streak = calculate_streak(current_user.id)
+
     for habit in habits:
         # Get weekly completion data
         completed_days, total_days = get_weekly_completion(habit.id)
         completion_percentage = (completed_days / total_days * 100) if total_days > 0 else 0
-        
-        # Check if habit has a streak
-        has_streak = calculate_streak(habit.id) >= 3  # Arbitrary threshold
         
         habits_data.append({
             "id": habit.id,
@@ -220,14 +110,13 @@ def weekly():
             "completion_percentage": completion_percentage,
             "completed_days": completed_days,
             "total_days": total_days,
-            "has_streak": has_streak
         })
-    
     return render_template(
         "weekly.html",
         active_page="weekly",
         habits=habits_data,
-        date_range=date_range
+        date_range=date_range,
+        streak=streak,
     )
 
 @main_bp.route("/monthly")
@@ -236,11 +125,15 @@ def monthly():
     """Render the monthly habits view"""
     # Get current user's habits
     habits = Habit.query.filter_by(user_id=current_user.id).all()
+
+    # Calculate streak
+    streak = calculate_streak(current_user.id)
     
     return render_template(
         "monthly.html",
         active_page="monthly",
-        habits=habits
+        habits=habits,
+        streak=streak,
     )
 
 @main_bp.route("/yearly")
@@ -249,11 +142,15 @@ def yearly():
     """Render the yearly habits view"""
     # Get current user's habits
     habits = Habit.query.filter_by(user_id=current_user.id).all()
+
+    # Calculate streak
+    streak = calculate_streak(current_user.id)
     
     return render_template(
         "yearly.html",
         active_page="yearly",
-        habits=habits
+        habits=habits,
+        streak=streak,
     )
 
 # ------------------------------------------------------------------
