@@ -5,6 +5,8 @@ from app.models import Habit, HabitRecord, SharedSnippet, User
 from datetime import datetime, timedelta
 from . import main_bp
 from .controller import create_default_habits, get_habit_color, calculate_streak, get_weekly_completion
+from app.config import COLOR_PALETTE, COLOR_GRADIENTS, PROGRESS_BAR_GRADIENT
+
 
 # ------------------------------------------------------------------
 # Public landing page
@@ -57,9 +59,6 @@ def dashboard():
         completed_days, total_days = get_weekly_completion(habit.id)
         completion_rate = f"{completed_days}/{total_days}"
         
-        # Color palette for habits
-        colors = ["#34BB61", "#FF786F", "#AF75F1", "#0D99FF"];
-        
         # Add to habit data list
         habit_data.append({
             "id": habit.id,
@@ -76,7 +75,9 @@ def dashboard():
         completed_count=completed_count,
         total_habits=total_habits,
         streak=streak,
-        colors=colors,
+        colors=COLOR_PALETTE,
+        gradients=COLOR_GRADIENTS,
+        progress_gradient=PROGRESS_BAR_GRADIENT,
     )
 
 @main_bp.route("/weekly")
@@ -117,6 +118,8 @@ def weekly():
         habits=habits_data,
         date_range=date_range,
         streak=streak,
+        colors=COLOR_PALETTE,
+        progress_gradient=PROGRESS_BAR_GRADIENT,
     )
 
 @main_bp.route("/monthly")
@@ -134,6 +137,7 @@ def monthly():
         active_page="monthly",
         habits=habits,
         streak=streak,
+        progress_gradient=PROGRESS_BAR_GRADIENT,
     )
 
 @main_bp.route("/yearly")
@@ -146,15 +150,13 @@ def yearly():
     # Calculate streak
     streak = calculate_streak(current_user.id)
 
-    # Color palette for habits
-    colors = ["#34BB61", "#FF786F", "#AF75F1", "#0D99FF"];
-    
     return render_template(
         "yearly.html",
         active_page="yearly",
         habits=habits,
         streak=streak,
-        colors=colors,
+        colors=COLOR_PALETTE,
+        progress_gradient=PROGRESS_BAR_GRADIENT,
     )
 
 # ------------------------------------------------------------------
