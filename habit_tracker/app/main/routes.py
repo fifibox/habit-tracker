@@ -5,6 +5,8 @@ from app.models import Habit, HabitRecord, SharedSnippet, User
 from datetime import datetime, timedelta
 from . import main_bp
 from .controller import create_default_habits, get_habit_color, calculate_streak, get_weekly_completion
+from app.config import COLOR_PALETTE, COLOR_GRADIENTS, PROGRESS_BAR_GRADIENT
+
 
 # ------------------------------------------------------------------
 # Public landing page
@@ -57,9 +59,6 @@ def dashboard():
         completed_days, total_days = get_weekly_completion(habit.id)
         completion_rate = f"{completed_days}/{total_days}"
         
-        # Get color class based on habit name
-        color_class = get_habit_color(habit.habit_name)
-        
         # Add to habit data list
         habit_data.append({
             "id": habit.id,
@@ -67,7 +66,6 @@ def dashboard():
             "completed": is_completed,
             "completion_rate": completion_rate,
             "completion_percent": (completed_days / total_days * 100) if total_days > 0 else 0,
-            "color_class": color_class
         })
     
     return render_template(
@@ -77,6 +75,9 @@ def dashboard():
         completed_count=completed_count,
         total_habits=total_habits,
         streak=streak,
+        colors=COLOR_PALETTE,
+        gradients=COLOR_GRADIENTS,
+        progress_gradient=PROGRESS_BAR_GRADIENT,
     )
 
 @main_bp.route("/weekly")
@@ -117,6 +118,8 @@ def weekly():
         habits=habits_data,
         date_range=date_range,
         streak=streak,
+        colors=COLOR_PALETTE,
+        progress_gradient=PROGRESS_BAR_GRADIENT,
     )
 
 @main_bp.route("/monthly")
@@ -134,6 +137,7 @@ def monthly():
         active_page="monthly",
         habits=habits,
         streak=streak,
+        progress_gradient=PROGRESS_BAR_GRADIENT,
     )
 
 @main_bp.route("/yearly")
@@ -145,12 +149,14 @@ def yearly():
 
     # Calculate streak
     streak = calculate_streak(current_user.id)
-    
+
     return render_template(
         "yearly.html",
         active_page="yearly",
         habits=habits,
         streak=streak,
+        colors=COLOR_PALETTE,
+        progress_gradient=PROGRESS_BAR_GRADIENT,
     )
 
 # ------------------------------------------------------------------
@@ -393,6 +399,9 @@ def profile():
     """Render the user profile page"""
     # Get current user's habits
     habits = Habit.query.filter_by(user_id=current_user.id).all()
+
+     # Calculate streak
+    streak = calculate_streak(current_user.id)
     
     return render_template(
         "profile.html",
@@ -400,7 +409,8 @@ def profile():
         user=current_user,
         database_data = db.session.query(HabitRecord).all(),
         shared_snippets = db.session.query(SharedSnippet).filter_by(receiver_id=current_user.id).all(),
-        habits=habits
+        habits=habits,
+        streak = streak,
     )
 
 @main_bp.route("/update_username", methods=["POST"])

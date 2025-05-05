@@ -20,4 +20,4 @@ Thumbs.db
 *.log
 .cache/
 
-habit_tracker/app/app.db
+app/app.db

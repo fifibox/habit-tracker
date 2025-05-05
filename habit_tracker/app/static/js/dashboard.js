@@ -3,7 +3,16 @@
   of completed habits and the remaining habits for today.
   The chart is rendered in a canvas element with the ID 'daily_completion'.
 */
-const ctx = document.getElementById('daily_completion').getContext('2d');
+// Get canvas context
+const ctx = document.getElementById("daily_completion").getContext("2d");
+
+// Use colors from the backend
+const stops = window.chartGradient || ["#FF1111", "#FFA500", "#FFFF00", "#00FF00"]; // Fallback colors if not provided
+const gradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
+
+stops.forEach((color, i) => {
+  gradient.addColorStop(i / (stops.length - 1), color);
+});
 
 const todayDone = window.todayDone;
 const totalHabits = window.totalHabits;
@@ -16,17 +25,20 @@ const doughnutChart = new Chart(ctx, {
     labels: ['Completed', 'Remaining'],
     datasets: [{
       data: totalHabits === 0 ? [0, 1] : [todayDone, remaining],
-      backgroundColor: ['#4CAF50', '#e0e0e0'],
+      backgroundColor: [
+        gradient, // Gradient for "Completed"
+        '#e0e0e0' // Default color for "Remaining"
+      ],
       borderColor: [
         "black", 
         "black"  
       ],
       borderWidth: 2 // Set border width to 2px
-      }]
+    }]
   },
   options: {
     cutout: '65%',
-    plugins: {
+        plugins: {
       legend: { display: false },
       tooltip: { enabled: false },
       doughnutLabel: {
@@ -61,7 +73,7 @@ const doughnutChart = new Chart(ctx, {
       ctx.fillText(options.labels[0].text, width / 2, height / 2);
     }
   }]
-})
+});
 
 // function to send a share request
 function submitShareForm() {
