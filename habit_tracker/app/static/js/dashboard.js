@@ -87,26 +87,119 @@ function submitShareForm() {
   }
 }
 
+const today = new Date().toLocaleDateString('en-CA'); // Get today's date in YYYY-MM-DD format considering timezone
+
 // Set the placeholder value of the date input to today's date
 document.addEventListener("DOMContentLoaded", function () {
     const datePicker = document.getElementById('date-picker');
-    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
     datePicker.value = today; // Set the value of the date input to today's date
 })
 
 // Function to handle date selection
 function handleDateSelection() {
     const selectedDate = document.getElementById('date-picker').value;
-    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
 
     if (selectedDate) {
         if (selectedDate > today) {
             alert('You cannot track habit in the future. Please choose a valid date.');
         } else {
-            alert(`You selected: ${selectedDate}`);
-            // Add logic here to handle the selected date
+            // Fetch habits for the selected date
+            fetch(`/habits_by_date?date=${selectedDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const habitList = document.getElementById("habit-list");
+                        habitList.innerHTML = ""; // Clear the current list
+
+                        data.habits.forEach(habit => {
+                            const habitItem = document.createElement("div");
+                            habitItem.className = "habit-item";
+
+                            // Create a wrapper div for the checkbox and label
+                            const checkboxLabelWrapper = document.createElement("div");
+                            checkboxLabelWrapper.className = "checkbox-label-wrapper";
+  
+                            // Create the checkbox
+                            const checkbox = document.createElement("input");
+                            checkbox.type = "checkbox";
+                            checkbox.id = `habit${habit.id}`;
+                            checkbox.checked = habit.completed; // Set checkbox based on completion status
+                            checkbox.dataset.habitId = habit.id; // Store habit ID for later use
+
+                            // Create the label
+                            const label = document.createElement("label");
+                            label.htmlFor = `habit${habit.id}`;
+                            label.textContent = habit.name;
+
+                            // Append the checkbox and label to the wrapper
+                            checkboxLabelWrapper.appendChild(checkbox);
+                            checkboxLabelWrapper.appendChild(label);
+                            // Append the wrapper to the habit item
+
+                            habitItem.appendChild(checkboxLabelWrapper);
+                            // Create the delete button
+                            const deleteButton = document.createElement("button");
+                            deleteButton.className = "delete-btn btn btn-danger";
+                            deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+                            deleteButton.onclick = () => deleteHabit(habit.id);
+
+                            habitItem.appendChild(deleteButton);
+
+                            habitList.appendChild(habitItem);
+                        });
+
+                        // Add a "Save" button
+                        const saveButton = document.createElement("button");
+                        saveButton.textContent = "Save";
+                        saveButton.className = "save-btn";
+                        saveButton.onclick = () => saveHabitStatuses(selectedDate);
+                        habitList.appendChild(saveButton);
+
+                        // Hide the "Add Habit" form
+                        const addHabitForm = document.querySelector(".add-habit-form");
+                        if (addHabitForm) {
+                            addHabitForm.style.display = "none"; // Hide the form
+                        }
+                    } else {
+                        alert(data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching habits:", error);
+                });
         }
     } else {
         alert('Please select a date.');
     }
+}
+
+// Function to save habit statuses
+function saveHabitStatuses(selectedDate) {
+    const checkboxes = document.querySelectorAll("#habit-list input[type='checkbox']");
+    const habitStatuses = Array.from(checkboxes).map(checkbox => ({
+        habit_id: checkbox.dataset.habitId,
+        completed: checkbox.checked
+    }));
+
+    // Send the updated statuses to the backend
+    fetch(`/save_habit_statuses`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Requested-With": "XMLHttpRequest"
+      },
+      body: JSON.stringify({ date: selectedDate, habits: habitStatuses })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert(`Habit statuses updated successfully for ${selectedDate}!`);
+        window.location.href = "/dashboard"; // Redirect to /dashboard
+      } else {
+        alert(data.error);
+      }
+    })
+    .catch(error => {
+      console.error("Error saving habit statuses:", error);
+    });
 }
