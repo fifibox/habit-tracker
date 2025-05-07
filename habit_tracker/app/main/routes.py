@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_required, current_user
 from app import db
-from app.models import Habit, HabitRecord, SharedSnippet, User
+from app.models import Habit, HabitRecord, SharedSnippet, User, SharedHabit
 from datetime import datetime, timedelta
 from . import main_bp
 from .controller import create_default_habits, get_habit_color, calculate_streak, get_weekly_completion
@@ -466,7 +466,6 @@ def share_snippet():
 # ------------------------------------------------------------------
 # Profile management page
 # ------------------------------------------------------------------
-
 @main_bp.route("/profile")
 @login_required
 def profile():
@@ -474,8 +473,32 @@ def profile():
     # Get current user's habits
     habits = Habit.query.filter_by(user_id=current_user.id).all()
 
-     # Calculate streak
+    # Calculate streak
     streak = calculate_streak(current_user.id)
+    
+    # Query others' habits shared with current user
+    shared_habits = SharedHabit.query.filter_by(shared_with=current_user.id).all()
+    shared_habits_data = []
+    for sh in shared_habits:
+        habit = sh.habit
+        records = habit.records
+        shared_habits_data.append({
+            'habit': {
+                'id': habit.id,
+                'habit_name': habit.habit_name,
+            },
+            'records': [
+                {
+                    'id': r.id,
+                    'date': r.date.strftime('%Y-%m-%d'),
+                    'completed': r.completed
+                } for r in records
+            ],
+            'sharer': {
+                'id': sh.sharer.id,
+                'username': sh.sharer.username
+            }
+        })
     
     return render_template(
         "profile.html",
@@ -486,6 +509,7 @@ def profile():
         habits=habits,
         streak = streak,
         progress_gradient = PROGRESS_BAR_GRADIENT,
+        shared_habits_data=shared_habits_data
     )
 
 @main_bp.route("/update_username", methods=["POST"])
