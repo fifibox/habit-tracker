@@ -1,7 +1,8 @@
 from flask import render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_required, current_user
+from app.forms import ShareHabitForm
 from app import db
-from app.models import Habit, HabitRecord, SharedSnippet, User, SharedHabit
+from app.models import Habit, HabitRecord, User, SharedHabit
 from datetime import datetime, timedelta
 from . import main_bp
 from .controller import create_default_habits, get_habit_color, calculate_streak, get_weekly_completion
@@ -19,14 +20,14 @@ def home():
 # ------------------------------------------------------------------
 # Auth-protected pages
 # ------------------------------------------------------------------
-@main_bp.route("/dashboard")
+@main_bp.route("/dashboard",methods=["GET", "POST"])
 @login_required
 def dashboard():
     """Render the dashboard with today's habits and stats"""
     # Create default habits if user has none
     habit_count = Habit.query.filter_by(user_id=current_user.id).count()
     if habit_count == 0:
-        create_default_habits(current_user.id)
+        create_default_habits(current_user.id, habit_count=habit_count)
     
     # Get current date
     today = datetime.now().date()
@@ -66,8 +67,14 @@ def dashboard():
             "completed": is_completed,
             "completion_rate": completion_rate,
             "completion_percent": (completed_days / total_days * 100) if total_days > 0 else 0,
-        })
+        })  
+
+    form = ShareHabitForm()
     
+    # Populate habit choices for dropdown
+    user_habits = Habit.query.filter_by(user_id=current_user.id).all()
+    form.habit.choices = [(h.id, h.habit_name) for h in user_habits]
+
     return render_template(
         "dashboard.html",
         active_page="dashboard",
@@ -78,6 +85,7 @@ def dashboard():
         colors=COLOR_PALETTE,
         gradients=COLOR_GRADIENTS,
         progress_gradient=PROGRESS_BAR_GRADIENT,
+        form=form,
     )
 
 @main_bp.route("/weekly")
@@ -112,6 +120,12 @@ def weekly():
             "completed_days": completed_days,
             "total_days": total_days,
         })
+    
+    form = ShareHabitForm()
+    # Populate habit choices for dropdown
+    user_habits = Habit.query.filter_by(user_id=current_user.id).all()
+    form.habit.choices = [(h.id, h.habit_name) for h in user_habits]
+
     return render_template(
         "weekly.html",
         active_page="weekly",
@@ -120,6 +134,7 @@ def weekly():
         streak=streak,
         colors=COLOR_PALETTE,
         progress_gradient=PROGRESS_BAR_GRADIENT,
+        form=form,
     )
 
 @main_bp.route("/monthly")
@@ -131,6 +146,11 @@ def monthly():
 
     # Calculate streak
     streak = calculate_streak(current_user.id)
+    form = ShareHabitForm()
+    
+    # Populate habit choices for dropdown
+    user_habits = Habit.query.filter_by(user_id=current_user.id).all()
+    form.habit.choices = [(h.id, h.habit_name) for h in user_habits]
     
     return render_template(
         "monthly.html",
@@ -138,6 +158,8 @@ def monthly():
         habits=habits,
         streak=streak,
         progress_gradient=PROGRESS_BAR_GRADIENT,
+        form=form,
+        colors=COLOR_PALETTE,
     )
 
 @main_bp.route("/yearly")
@@ -149,6 +171,11 @@ def yearly():
 
     # Calculate streak
     streak = calculate_streak(current_user.id)
+    form = ShareHabitForm()
+    
+    # Populate habit choices for dropdown
+    user_habits = Habit.query.filter_by(user_id=current_user.id).all()
+    form.habit.choices = [(h.id, h.habit_name) for h in user_habits]
 
     return render_template(
         "yearly.html",
@@ -157,6 +184,7 @@ def yearly():
         streak=streak,
         colors=COLOR_PALETTE,
         progress_gradient=PROGRESS_BAR_GRADIENT,
+        form=form,
     )
 
 # ------------------------------------------------------------------
@@ -441,27 +469,34 @@ def get_habit_data_api(habit_id):
 # ------------------------------------------------------------------
 # Route for sharing charts
 # ------------------------------------------------------------------
-@main_bp.route('/share_snippet', methods=['POST'])
+@main_bp.route("/share_habit", methods=["POST"])
 @login_required
-def share_snippet():
-    receiver_username = request.form.get('receiver_username')
-    message = request.form.get('message')
+def share_habit():
+    form = ShareHabitForm()
+    user_habits = Habit.query.filter_by(user_id=current_user.id).all()
+    form.habit.choices = [(h.id, h.habit_name) for h in user_habits]
 
-    receiver = User.query.filter_by(username=receiver_username).first()
-    if not receiver:
-        flash('User not found.', 'danger')
-        return redirect(url_for('main.dashboard'))
+    if form.validate_on_submit():
+        habit_id = form.habit.data
+        username = form.recipient.data
 
-    snippet = SharedSnippet(
-        sender_id=current_user.id,
-        receiver_id=receiver.id,
-        message=message
-    )
-    db.session.add(snippet)
-    db.session.commit()
+        recipient = User.query.filter_by(username=username).first()
+        if not recipient:
+            flash("User not found", "danger")
+        else:
+            shared = SharedHabit(
+                habit_id=habit_id,
+                shared_by=current_user.id,
+                shared_with=recipient.id
+            )
+            db.session.add(shared)
+            db.session.commit()
+            flash("Habit shared successfully!", "success")
 
-    flash('Shared successfully!', 'success')
-    return redirect(url_for('main.dashboard'))
+        return redirect(request.referrer or url_for("main.dashboard"))
+
+    flash("Invalid form", "danger")
+    return redirect(request.referrer or url_for("main.dashboard"))
 
 # ------------------------------------------------------------------
 # Profile management page
@@ -481,6 +516,9 @@ def profile():
     shared_habits_data = []
     for sh in shared_habits:
         habit = sh.habit
+        if not habit:
+            continue
+        # Get records for the shared habit
         records = habit.records
         shared_habits_data.append({
             'habit': {
@@ -505,7 +543,6 @@ def profile():
         active_page="profile",
         user=current_user,
         database_data = db.session.query(HabitRecord).all(),
-        shared_snippets = db.session.query(SharedSnippet).filter_by(receiver_id=current_user.id).all(),
         habits=habits,
         streak = streak,
         progress_gradient = PROGRESS_BAR_GRADIENT,
