@@ -1,4 +1,4 @@
-from app.models import Habit, HabitRecord, SharedSnippet, User
+from app.models import Habit, HabitRecord, User
 from datetime import datetime, timedelta
 # ------------------------------------------------------------------
 # Helper functions
