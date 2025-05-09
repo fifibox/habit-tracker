@@ -537,7 +537,11 @@ def profile():
                 'username': sh.sharer.username
             }
         })
+    form = ShareHabitForm()
     
+    # Populate habit choices for dropdown
+    user_habits = Habit.query.filter_by(user_id=current_user.id).all()
+    form.habit.choices = [(h.id, h.habit_name) for h in user_habits]
     return render_template(
         "profile.html",
         active_page="profile",
@@ -546,7 +550,8 @@ def profile():
         habits=habits,
         streak = streak,
         progress_gradient = PROGRESS_BAR_GRADIENT,
-        shared_habits_data=shared_habits_data
+        shared_habits_data=shared_habits_data,
+        form=form
     )
 
 @main_bp.route("/update_username", methods=["POST"])
