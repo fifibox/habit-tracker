@@ -41,3 +41,36 @@ document.addEventListener("DOMContentLoaded", () => {
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 });
+
+// TYPEWRITER EFFECT
+var aText = [
+  'We are what we repeatedly do. Excellence, then, is not an act, but a habit. — Aristotle'
+];
+var iSpeed = 100; // time delay of print out
+var iIndex = 0; // start printing array at this position
+var iArrLength = aText[0].length; // the length of the text array
+var iScrollAt = 20; // start scrolling up at this many lines
+
+var iTextPos = 0; // initialise text position
+var sContents = ''; // initialise contents variable
+var iRow; // initialise current row
+
+function typewriter() {
+  sContents = '';
+  iRow = Math.max(0, iIndex - iScrollAt);
+  var destination = document.getElementById("typedtext");
+
+  while (iRow < iIndex) {
+    sContents += aText[iRow++] + '<br />';
+  }
+  // Add a blinking cursor span
+  if (iTextPos < iArrLength) {
+    destination.innerHTML = sContents + aText[iIndex].substring(0, iTextPos) + '<span class="type-cursor">|</span>';
+    iTextPos++;
+    setTimeout(typewriter, iSpeed);
+  } else {
+    // After typing is done, show the full text and a blinking cursor
+    destination.innerHTML = sContents + aText[iIndex] + '<span class="type-cursor">|</span>';
+  }
+}
+typewriter();
