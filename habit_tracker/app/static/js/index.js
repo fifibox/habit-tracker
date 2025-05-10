@@ -35,7 +35,7 @@ function closeSignupForm() {
 
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
-  if (params.has("show_login") && params.get("show_login") === "true") {
+  if (params.has("show_login")) {
     openLoginForm();
     // Clean up the URL
     window.history.replaceState({}, document.title, window.location.pathname);
