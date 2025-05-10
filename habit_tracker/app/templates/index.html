@@ -34,7 +34,7 @@
           <input type="text" name="username" required>
           <label>Password:</label>
           <input type="password" name="password" required>
-
+          <a href="#" onclick="openResetForm(); return false;">Forgot password?</a>
           {% if request.args.get('show_login') %}
             {% with messages = get_flashed_messages(with_categories=true) %}
               {% if messages %}
@@ -77,6 +77,19 @@
               <button type="submit" class="signup-btn form-btn">Sign Up</button>
             </form>
           </div>
+  </div>
+
+  <!-- Reset Password Modal -->
+  <div id="resetForm" class="form-popup">
+    <div class="form-content">
+      <button class="close-btn form-btn" onclick="closeResetForm()">×</button>
+      <form method="POST" action="{{ url_for('main.reset_request') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Email:</label>
+        <input type="email" name="email" required>
+        <button type="submit" class="form-btn" style="width:100%;">Send Reset Link</button>
+      </form>
+    </div>
   </div>
 
   <script src="{{ url_for('static', filename='js/index.js') }}"></script>

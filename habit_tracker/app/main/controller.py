@@ -1,5 +1,10 @@
 from app.models import Habit, HabitRecord, User
 from datetime import datetime, timedelta
+import itsdangerous
+from flask_mail import Message
+from flask import current_app
+from app import db
+
 # ------------------------------------------------------------------
 # Helper functions
 # ------------------------------------------------------------------
@@ -100,3 +105,17 @@ def get_weekly_completion(habit_id):
     total_days = 7  # Last 7 days
     
     return (completed_days, total_days)
+
+# generate reset token for forgot password
+def generate_reset_token(user, expires_sec=1800):
+    s = itsdangerous.URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    return s.dumps(user.email, salt='password-reset-salt')
+
+# verify reset token for forgot password
+def verify_reset_token(token, expires_sec=1800):
+    s = itsdangerous.URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    try:
+        email = s.loads(token, salt='password-reset-salt', max_age=expires_sec)
+    except Exception:
+        return None
+    return User.query.filter_by(email=email).first()

@@ -74,3 +74,14 @@ function typewriter() {
   }
 }
 typewriter();
+
+function openResetForm() {
+  document.getElementById("resetForm").style.display = "flex";
+  document.getElementById("loginForm").style.display = "none";
+  const form = document.getElementById("resetForm").querySelector('.form-content');
+  if (form) {
+    form.style.animation = "none";
+    void form.offsetHeight;
+    form.style.animation = "popupScale 0.3s ease-out forwards";
+  }
+}
