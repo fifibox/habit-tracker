@@ -71,26 +71,6 @@ function renderCalendar() {
 
     tbodyHtml += "</tbody>";
     tbl.insertAdjacentHTML("beforeend", tbodyHtml);
-
-    /* ---------------- Cell click handlers --------------- */
-    tbl.querySelectorAll("td").forEach((cell) => {
-        cell.addEventListener("click", () => {
-            const key = cell.dataset.key;
-            const hIdx = parseInt(cell.dataset.habit, 10);
-            const habitColor = habits[hIdx].color;
-
-            const wasDone = cell.style.backgroundColor !== "";
-            if (wasDone) {
-                // Toggle off
-                cell.style.backgroundColor = "";
-                localStorage.removeItem(key);
-            } else {
-                // Mark as done
-                cell.style.backgroundColor = habitColor;
-                localStorage.setItem(key, "1");
-            }
-        });
-    });
 }
 
 function initMonthYearSelectors() {
