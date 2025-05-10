@@ -85,25 +85,41 @@
 
 #monthSelect, #yearSelect {
     font-size: 1.1rem;
-    padding: 6px 30px 6px 12px;
-    border: 2px solid #333;
-    border-radius: 20px;
-    background: #fff url("data:image/svg+xml;charset=UTF-8,<svg width='16' height='16' fill='black' viewBox='0 0 16 16'><path d='M4.646 6.646a.5.5 0 0 1 .708 0L8 9.293l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z'/></svg>") no-repeat right 0.75rem center/1.2em auto;
+    padding: 6px 0 6px 0;
+    border: none;
+    border-bottom: 2px solid #333;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    outline: none;
+    width: auto;
+    min-width: 60px;
+    text-align: center;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    box-shadow: 2px 2px 0 #eee;
-    margin-right: 10px;
-    min-width: 110px;
     transition: border-color 0.2s;
-    background-color: #f9f9f9;
-    color: #222;
-    font-weight: 600;
 }
+
+#yearSelect {
+    width: 4ch;
+    min-width: 60px;
+}
+
 #monthSelect:focus, #yearSelect:focus {
-    border-color: #007bff;
+    border-bottom: 2.5px solid #444;
     outline: none;
 }
+
+.monthly-select-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 1rem;
+    gap: 10px;
+}
+
 
 @media (max-width: 600px) {
     #monthSelect, #yearSelect {
