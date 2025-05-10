@@ -31,6 +31,12 @@ This section will include how to launch the application.
 7. (optional) python scripts/seed.py 
 8. flask run
 
+> **Note:** This application uses Google Gmail API for sending password reset emails. You'll need two files to make it work:
+> - `credentials.json`: Contains your Google API credentials
+> - `token.json`: Contains the OAuth2 token for Gmail API access
+> 
+> These files should be placed in the project root directory. Contact the project maintainer to obtain these files. Do not commit these files to version control as they contain sensitive information.
+
 ## Testing (To Be Added)
 This section will include how to run unit tests, if applicable.
 
@@ -40,23 +46,24 @@ gc_2_app/                            ← GitHub repository directory
 ├── habit_tracker/               ← Flask main application folder
 │   ├── app/                     ← your main Flask application code
 │   │   ├── __init__.py          ← initialization file
-│   │   ├── blueprints/          ← modular Flask blueprints
-│   │   │   ├── auth/            ← authentication-related routes
-│   │   │   │   ├── __init__.py
-│   │   │   │   ├── routes.py
-│   │   │   └── main/            ← main application routes
-│   │   │       ├── __init__.py
-│   │   │       ├── routes.py
+│   │   ├── auth/                ← authentication-related routes
+│   │   │   ├── __init__.py
+│   │   │   └── routes.py
+│   │   ├── main/                ← main application routes
+│   │   │   ├── __init__.py
+│   │   │   ├── routes.py
+│   │   │   └── controller.py    ← business logic
 │   │   ├── models.py            ← database models and tables
 │   │   ├── forms.py             ← forms for user input
+│   │   ├── config.py            ← application configuration
+│   │   ├── gmail_api.py         ← Gmail API integration
 │   │   ├── templates/           ← HTML templates for rendering pages
-│   │   │   └── index.html
 │   │   └── static/              ← CSS, images, JavaScript files
 │   │       ├── css/             ← CSS files for styling
-│   │       │   └── style.css    ← additional styles
 │   │       ├── js/              ← JavaScript files for interactivity
 │   ├── migrations/              ← database migration files
 │   ├── scripts/                 ← utility scripts (e.g., seed.py)
+│   ├── backups/                 ← database backup files
 │   ├── tests/                   ← test files go here
 │   ├── requirements.txt         ← list of Python packages
 │   └── app.py                   ← main Flask application entry point
