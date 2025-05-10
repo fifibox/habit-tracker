@@ -92,6 +92,26 @@
     </div>
   </div>
 
+  <!-- Reset Password Token Modal -->
+  <div id="resetTokenModal" class="form-popup" {% if show_reset_token_modal %}style="display:flex;"{% else %}style="display:none;"{% endif %}>
+    <div class="form-content">
+      <button class="close-btn form-btn" onclick="closeResetTokenModal()">×</button>
+      <form method="POST" action="{{ url_for('main.reset_token', token=token) }}">
+        {{ reset_token_form.hidden_tag() }}
+        <label>New Password:</label>
+        {{ reset_token_form.password(class="form-control") }}
+        <label>Confirm Password:</label>
+        {{ reset_token_form.confirm_password(class="form-control") }}
+        <button type="submit" class="form-btn" style="width:100%;">Reset Password</button>
+      </form>
+    </div>
+  </div>
+
   <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+  {% if show_reset_token_modal %}
+  <script>
+    document.getElementById('resetTokenModal').style.display = 'flex';
+  </script>
+  {% endif %}
 </body>
 </html>

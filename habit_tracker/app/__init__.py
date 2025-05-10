@@ -8,6 +8,7 @@ from flask_login import LoginManager
 from flask_wtf import CSRFProtect
 from app.config import Config 
 from flask_mail import Mail
+from app.forms import ResetPasswordForm
 
 # ------------------------------------------------------------------
 # Extensions (created once, initialised later inside create_app())
@@ -33,6 +34,13 @@ def create_app() -> Flask:
     login_manager.login_message = "Please log in to access this page."
     csrf.init_app(app)
     mail.init_app(app)
+
+    # ----------------------------------------------------------------
+    # Inject reset token form into all templates
+    # ----------------------------------------------------------------
+    @app.context_processor
+    def inject_reset_token_form():
+        return dict(reset_token_form=ResetPasswordForm())
 
     # ----------------------------------------------------------------
     # Register blueprints

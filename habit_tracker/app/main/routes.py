@@ -15,7 +15,7 @@ from app.gmail_api import send_gmail
 @main_bp.route("/")
 def home():
     """Render the landing page"""
-    return render_template("index.html")
+    return render_template("index.html", reset_token_form=ResetPasswordForm())
 
 # ------------------------------------------------------------------
 # Auth-protected pages
@@ -652,7 +652,8 @@ def reset_token(token):
         flash('Your password has been updated!', 'success')
         return redirect(url_for('auth.login'))
     return render_template(
-        'reset_token.html',
-        form=form,
+        'index.html',
+        reset_token_form=form,
+        show_reset_token_modal=True,
         token=token
     )
