@@ -5,9 +5,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/yearly.css') }}">
 
     <div class="container">
-        <div class="year-toggle">
-            <button class="year-button active" data-year="2025">2025</button>
-            <button class="year-button" data-year="2024">2024</button>
+        <div class="d-flex justify-content-end align-items-center mb-3">
+            <select id="yearSelect" class="form-select"></select>
         </div>
 
         {% for habit in habits %}

@@ -169,3 +169,26 @@
 .legend-cell.completed {
     background-color: #239a3b;
 }
+
+#yearSelect {
+    font-size: 1.1rem;
+    padding: 6px 0 6px 0;
+    border: none;
+    border-bottom: 2px solid #333;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    outline: none;
+    width: 4ch;
+    min-width: 60px;
+    text-align:center;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    transition: border-color 0.2s;
+}
+
+#yearSelect:focus {
+    border-bottom: 2.5px solid #444;
+    outline: none;
+}
