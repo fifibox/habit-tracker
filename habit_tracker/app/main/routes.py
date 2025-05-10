@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from . import main_bp
 from .controller import create_default_habits, get_habit_color, calculate_streak, get_weekly_completion
 from app.config import COLOR_PALETTE, COLOR_GRADIENTS, PROGRESS_BAR_GRADIENT
+from calendar import monthrange
 
 
 # ------------------------------------------------------------------
@@ -614,3 +615,27 @@ def update_password():
     db.session.commit()
     flash("Password updated successfully!", "profile")
     return redirect(url_for("main.profile"))
+
+@main_bp.route("/api/monthly_habits")
+@login_required
+def api_monthly_habits():
+    year = request.args.get("year", default=datetime.now().year, type=int)
+    month = request.args.get("month", default=datetime.now().month, type=int)
+    habits = Habit.query.filter_by(user_id=current_user.id).all()
+    result = []
+    for idx, habit in enumerate(habits):
+        days_in_month = monthrange(year, month)[1]
+        days = []
+        for day in range(1, days_in_month + 1):
+            date = datetime(year, month, day).date()
+            record = HabitRecord.query.filter_by(habit_id=habit.id, date=date).first()
+            days.append({
+                "date": date.strftime("%Y-%m-%d"),
+                "completed": bool(record and record.completed)
+            })
+        result.append({
+            "name": habit.habit_name,
+            "color": COLOR_PALETTE[idx % len(COLOR_PALETTE)],
+            "days": days
+        })
+    return jsonify(result)
