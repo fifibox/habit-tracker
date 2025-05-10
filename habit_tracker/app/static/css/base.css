@@ -198,3 +198,20 @@ body {
         position: relative;
         }
     }
+
+/* hamburger menu navbar for small screens */
+@media (max-width: 991.98px) {
+  .navbar.d-flex.d-lg-none {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .navbar.d-flex.d-lg-none .navbar-nav {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  .navbar.d-flex.d-lg-none .nav-link,
+  .navbar.d-flex.d-lg-none .btn {
+    margin-left: 0.25rem;
+    margin-right: 0.25rem;
+  }
+}
