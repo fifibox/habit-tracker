@@ -1,9 +1,23 @@
+.container {
+    width: 90%;
+    margin: 0 auto;
+    padding: 20px;
+    padding-bottom: 80px;
+    border: 4px solid black;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 4px 4px 0 4px rgba(0, 0, 0, 0.3);
+}
+
 /* Calendar cell sizing */
 .calendar {
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
     padding: 20px;
+    border: none;
+    border-collapse: collapse;
+    box-shadow: none ;
 }
 
 #calendar th,
@@ -22,6 +36,8 @@
 
 #calendar th {
     font-weight: 600;
+    border: none;
+    background: transparent;
 }
 
 /* Make header arrows look clickable */
@@ -30,9 +46,68 @@
     cursor: pointer;
 }
 
-/* Share button pill style */
-#shareBtn {
-    border-radius: 9999px;
-    padding-inline: 1.5rem;
+#calendar, #calendar th, #calendar td {
+    border: 2px solid #000 ;
+    border-collapse: collapse;
+}
+
+#calendar th, #calendar td {
+    padding: 4px 6px;
+}
+
+#calendar th.text-start {
+    min-width: 120px;
+    border: none ;
+    background: transparent; 
+}
+
+#calendar td {
+    border: 2px solid #000;
+    border-collapse: collapse;
+}
+
+#calendar th {
+    border: none ;
+    background: transparent;
+}
+
+#calendar {
+    border: none;
+    box-shadow: none ;
+    outline: none ;
+    border-collapse: collapse;
+}
+
+.table-responsive {
+    border: none;
+    box-shadow: none;
+}
+
+#monthSelect, #yearSelect {
+    font-size: 1.1rem;
+    padding: 6px 30px 6px 12px;
+    border: 2px solid #333;
+    border-radius: 20px;
+    background: #fff url("data:image/svg+xml;charset=UTF-8,<svg width='16' height='16' fill='black' viewBox='0 0 16 16'><path d='M4.646 6.646a.5.5 0 0 1 .708 0L8 9.293l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z'/></svg>") no-repeat right 0.75rem center/1.2em auto;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    box-shadow: 2px 2px 0 #eee;
+    margin-right: 10px;
+    min-width: 110px;
+    transition: border-color 0.2s;
+    background-color: #f9f9f9;
+    color: #222;
     font-weight: 600;
+}
+#monthSelect:focus, #yearSelect:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+@media (max-width: 600px) {
+    #monthSelect, #yearSelect {
+        width: 100%;
+        margin-bottom: 10px;
+    }
 }
