@@ -133,3 +133,24 @@ label {
         margin:0 50px;
         }
     }
+
+/* Go button */
+.dashboard-go-btn {
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4em 1.2em;
+  font-size: 1.05rem;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+  margin-left: 0.5rem;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.08);
+}
+
+.dashboard-go-btn:hover,
+.dashboard-go-btn:focus {
+  background: #444;
+  color: #fff;
+  outline: none;
+}

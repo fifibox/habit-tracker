@@ -223,4 +223,30 @@ document.addEventListener('DOMContentLoaded', function() {
             alert("Please enter a username.");
         }
     };
+
+    initYearSelector();
+    document.addEventListener("DOMContentLoaded", function() {
+        initYearSelector();
+        const currentYear = new Date().getFullYear();
+        initializeGrids(currentYear);
+    });
 });
+
+function initYearSelector() {
+    const yearSelect = document.getElementById("yearSelect");
+    if (!yearSelect) return; 
+    yearSelect.innerHTML = "";
+    const currentYear = new Date().getFullYear();
+    for (let y = currentYear - 2; y <= currentYear + 2; y++) {
+        const option = document.createElement("option");
+        option.value = y;
+        option.text = y;
+        yearSelect.appendChild(option);
+    }
+    
+    yearSelect.value = currentYear;
+
+    yearSelect.addEventListener("change", () => {
+        initializeGrids(parseInt(yearSelect.value));
+    });
+}
