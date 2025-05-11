@@ -4,20 +4,92 @@ venv/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-*.pyo
+*$py.class
 
-# Editor/OS specific
-.DS_Store
-Thumbs.db
+# C extensions
+*.so
 
-# Environment files
-.env
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+pip-wheel-metadata/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# VS Code
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+test_result_*.txt
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Flask/Migrations
+migrations/versions/
+instance/
+*.db
+*.sqlite3
+
+# VSCode
 .vscode/
 
-# Logs and cache
-*.log
-.cache/
+# MacOS
+.DS_Store
 
+# Secret files
+.env
+*.env
+token.json
+credentials.json
+
+# Backup files
+backups/
+*.bak
+
+# Ignore database
 app/app.db
+
+# Ignore log files
+*.log
+
+# Ignore compiled JS/CSS (if any build process)
+static/build/
+static/dist/
