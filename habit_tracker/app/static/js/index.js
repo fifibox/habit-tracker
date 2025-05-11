@@ -36,7 +36,7 @@ function closeSignupForm() {
 document.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
   if (params.has("show_login")) {
-    openLoginForm();  // Uses the function above
+    openLoginForm();
     // Clean up the URL
     window.history.replaceState({}, document.title, window.location.pathname);
   }
@@ -74,3 +74,24 @@ function typewriter() {
   }
 }
 typewriter();
+
+// open the reset form when user clicks on forgot password button
+function openResetForm() {
+  document.getElementById("resetForm").style.display = "flex";
+  document.getElementById("loginForm").style.display = "none";
+  const form = document.getElementById("resetForm").querySelector('.form-content');
+  if (form) {
+    form.style.animation = "none";
+    void form.offsetHeight;
+    form.style.animation = "popupScale 0.3s ease-out forwards";
+  }
+}
+
+// close the reset form
+function closeResetForm() {
+  document.getElementById("resetForm").style.display = "none";
+}
+
+function closeResetTokenModal() {
+  document.getElementById('resetTokenModal').style.display = 'none';
+}
