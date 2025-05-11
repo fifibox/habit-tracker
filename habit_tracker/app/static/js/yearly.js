@@ -225,11 +225,16 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     initYearSelector();
-    fetchAndRenderYearly(new Date().getFullYear());
+    document.addEventListener("DOMContentLoaded", function() {
+        initYearSelector();
+        const currentYear = new Date().getFullYear();
+        initializeGrids(currentYear);
+    });
 });
 
 function initYearSelector() {
     const yearSelect = document.getElementById("yearSelect");
+    if (!yearSelect) return; 
     yearSelect.innerHTML = "";
     const currentYear = new Date().getFullYear();
     for (let y = currentYear - 2; y <= currentYear + 2; y++) {
@@ -242,11 +247,6 @@ function initYearSelector() {
     yearSelect.value = currentYear;
 
     yearSelect.addEventListener("change", () => {
-        fetchAndRenderYearly(parseInt(yearSelect.value));
+        initializeGrids(parseInt(yearSelect.value));
     });
 }
-
-document.addEventListener("DOMContentLoaded", function() {
-    initYearSelector();
-    fetchAndRenderYearly(new Date().getFullYear());
-});

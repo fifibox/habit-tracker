@@ -194,7 +194,7 @@
 }
 
 /* Yearly grid scroll */
-@media (max-width: 900px) {
+@media (max-width: 1270px) {
   .yearly-grid-scroll {
     overflow-x: auto;
     width: 100%;
