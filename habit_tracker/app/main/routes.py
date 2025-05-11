@@ -1,14 +1,14 @@
-from flask import render_template, redirect, url_for, request, flash, jsonify
+from flask import render_template, redirect, url_for, request, flash, jsonify, current_app
 from flask_login import login_required, current_user
-from app.forms import ShareHabitForm
+from app.forms import ShareHabitForm, PasswordResetRequestForm, ResetPasswordForm
 from app import db
 from app.models import Habit, HabitRecord, User, SharedHabit
 from datetime import datetime, timedelta
 from . import main_bp
-from .controller import create_default_habits, get_habit_color, calculate_streak, get_weekly_completion
+from .controller import create_default_habits, get_habit_color, calculate_streak, get_weekly_completion, generate_reset_token, verify_reset_token
 from app.config import COLOR_PALETTE, COLOR_GRADIENTS, PROGRESS_BAR_GRADIENT
+from app.gmail_api import send_gmail
 from calendar import monthrange
-
 
 # ------------------------------------------------------------------
 # Public landing page
@@ -16,7 +16,7 @@ from calendar import monthrange
 @main_bp.route("/")
 def home():
     """Render the landing page"""
-    return render_template("index.html")
+    return render_template("index.html", reset_token_form=ResetPasswordForm())
 
 # ------------------------------------------------------------------
 # Auth-protected pages
@@ -28,7 +28,7 @@ def dashboard():
     # Create default habits if user has none
     habit_count = Habit.query.filter_by(user_id=current_user.id).count()
     if habit_count == 0:
-        create_default_habits(current_user.id, habit_count=habit_count)
+        create_default_habits(current_user.id)
     
     # Get current date
     today = datetime.now().date()
@@ -538,7 +538,11 @@ def profile():
                 'username': sh.sharer.username
             }
         })
+    form = ShareHabitForm()
     
+    # Populate habit choices for dropdown
+    user_habits = Habit.query.filter_by(user_id=current_user.id).all()
+    form.habit.choices = [(h.id, h.habit_name) for h in user_habits]
     return render_template(
         "profile.html",
         active_page="profile",
@@ -547,7 +551,8 @@ def profile():
         habits=habits,
         streak = streak,
         progress_gradient = PROGRESS_BAR_GRADIENT,
-        shared_habits_data=shared_habits_data
+        shared_habits_data=shared_habits_data,
+        form=form
     )
 
 @main_bp.route("/update_username", methods=["POST"])
@@ -615,6 +620,44 @@ def update_password():
     db.session.commit()
     flash("Password updated successfully!", "profile")
     return redirect(url_for("main.profile"))
+
+@main_bp.route('/reset_password', methods=['GET', 'POST'])
+def reset_request():
+    form = PasswordResetRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            token = generate_reset_token(user)
+            reset_url = url_for('main.reset_token', token=token, _external=True)
+            subject = 'Password Reset Request'
+            body = f'''To reset your password, visit the following link:
+{reset_url}
+
+If you did not make this request, simply ignore this email.
+'''
+            send_gmail(user.email, subject, body)
+        flash('If your email is registered, you will receive a password reset link.', 'info')
+        return redirect(url_for('auth.login'))
+    return render_template('reset_request.html', form=form)
+
+@main_bp.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_token(token):
+    user = verify_reset_token(token)
+    form = ResetPasswordForm()
+    if not user:
+        flash('That is an invalid or expired token', 'warning')
+        return redirect(url_for('main.reset_request'))
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        db.session.commit()
+        flash('Your password has been updated!', 'success')
+        return redirect(url_for('auth.login'))
+    return render_template(
+        'index.html',
+        reset_token_form=form,
+        show_reset_token_modal=True,
+        token=token
+    )
 
 @main_bp.route("/api/monthly_habits")
 @login_required

@@ -2,6 +2,7 @@ from app import db, login_manager
 from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 class User(UserMixin, db.Model):  
     __tablename__ = 'users'
@@ -51,18 +52,6 @@ class HabitRecord(db.Model):
     date = db.Column(db.Date, nullable=False)
     completed = db.Column(db.Boolean, default=False)
 
-from datetime import datetime
-
-class SharedSnippet(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    receiver_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    message = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_snippets')
-    receiver = db.relationship('User', foreign_keys=[receiver_id], backref='received_snippets')
-
 class SharedHabit(db.Model):
     __tablename__ = 'shared_habits'
     id = db.Column(db.Integer, primary_key=True)
@@ -71,6 +60,6 @@ class SharedHabit(db.Model):
     shared_with = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    habit = db.relationship('Habit', backref='shared_habits')
+    habit = db.relationship('Habit', backref=db.backref('shared_habits', cascade='all, delete-orphan'))
     sharer = db.relationship('User', foreign_keys=[shared_by], backref='habits_shared_by_me')
     receiver = db.relationship('User', foreign_keys=[shared_with], backref='habits_shared_with_me')
