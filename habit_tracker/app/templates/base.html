@@ -21,7 +21,7 @@
 <body>
   <div class="outer-container">
     <!-- Big screen custom navbar -->
-    <nav class="navbar custom-navbar d-none d-lg-flex">
+    <nav class="navbar custom-navbar desktop-navbar">
       <div class="navbar-left">
         <a href="{{ url_for('main.dashboard')}}" class="nav-btn {% if active_page == 'dashboard' %}btn-active{% endif %}">Dashboard</a>
         <a href="{{ url_for('main.profile')}}" class="nav-btn {% if active_page == 'profile' %}btn-active{% endif %}">Profile</a>
@@ -36,33 +36,21 @@
     </nav>
 
     <!-- Small screen hamburger menu navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white d-flex d-lg-none">
+    <nav class="navbar mobile-navbar" style="background: #fff; border-bottom: 2px solid #222;">
       <a class="navbar-brand font-weight-bold" href="{{ url_for('main.dashboard')}}">Habit Tracker</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="mainNavbar">
         <ul class="navbar-nav ml-auto">
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.dashboard')}}">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.profile')}}">Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.weekly')}}">Weekly</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.monthly')}}">Monthly</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.yearly')}}">Yearly</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout')}}">Logout</a></li>
           <li class="nav-item">
-            <a href="{{ url_for('main.dashboard')}}" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url_for('main.profile')}}" class="nav-link {% if active_page == 'profile' %}active{% endif %}">Profile</a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url_for('main.weekly') }}" class="nav-link {% if active_page == 'weekly' %}active{% endif %}">Weekly</a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url_for('main.monthly') }}" class="nav-link {% if active_page == 'monthly' %}active{% endif %}">Monthly</a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url_for('main.yearly') }}" class="nav-link {% if active_page == 'yearly' %}active{% endif %}">Yearly</a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url_for('auth.logout') }}" class="nav-link {% if active_page == 'logout' %}active{% endif %}">Logout</a>
-          </li>
-          <li class="nav-item">
-            <button class="btn btn-outline-primary ml-2" type="button" onclick="document.getElementById('sharePopup').style.display='flex'">Share 📨</button>
+            <a class="nav-link" href="javascript:void(0);" onclick="document.getElementById('sharePopup').style.display='flex'">Share 📨</a>
           </li>
         </ul>
       </div>
