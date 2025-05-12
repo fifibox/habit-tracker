@@ -19,10 +19,13 @@ login_manager = LoginManager()
 csrf = CSRFProtect()
 mail = Mail()
 
-def create_app() -> Flask:
+def create_app(config: dict = None) -> Flask:
     """Application factory"""
     app = Flask(__name__, static_folder="static")
     app.config.from_object(Config)
+
+    if config:
+        app.config.from_mapping(config)
 
     # ----------------------------------------------------------------
     # Initialise extensions WITH the app instance

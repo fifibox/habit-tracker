@@ -4,7 +4,7 @@ from flask import session
 def test_login_success_sets_session(client, make_user):
     make_user(username="alice", password="secret")
     client.post(
-        "/login",
+        "/auth/login",
         data={"username": "alice", "password": "secret"},
         follow_redirects=True,
     )
@@ -36,6 +36,6 @@ def test_login_unregistered_user(client):
 def test_logout_clears_session(client, make_user):
     make_user(username="alice", password="secret")
     client.post("/login", data={"username": "alice", "password": "secret"})
-    client.get("/logout", follow_redirects=True)
+    client.get("/auth/logout", follow_redirects=True)
     with client.session_transaction() as sess:
         assert "_user_id" not in sess
