@@ -2,7 +2,7 @@
 
 import os
 # 🔐 Inject SECRET_KEY manually (matches your .env)
-os.environ["SECRET_KEY"] = "amber_pearl_latte_is_the_best"
+
 
 import pytest
 from sqlalchemy.orm import scoped_session, sessionmaker
