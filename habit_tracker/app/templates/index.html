@@ -74,6 +74,15 @@
               <input type="email" name="email" required>
               <label>Password:</label>
               <input type="password" name="password" required>
+              {% with messages = get_flashed_messages(category_filter=['signup']) %}
+                {% if messages %}
+                  <ul class="flashes">
+                    {% for message in messages %}
+                      <li>{{ message }}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              {% endwith %}
               <button type="submit" class="signup-btn form-btn">Sign Up</button>
             </form>
           </div>
