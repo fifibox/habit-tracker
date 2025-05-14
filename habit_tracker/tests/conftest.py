@@ -4,6 +4,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from app import create_app, db as _db
 from app.models import User
 from datetime import datetime
+from werkzeug.security import generate_password_hash
 
 # ------------------------------------------------------------------  
 # Flask app for tests – uses an in-memory SQLite DB
@@ -41,17 +42,6 @@ def client(app):
     return app.test_client()
 
 # ------------------------------------------------------------------  
-# Create tables once
-# ------------------------------------------------------------------
-@pytest.fixture
-def db(app):
-    with app.app_context():
-        _db.create_all()
-        yield _db
-        _db.session.remove() 
-        _db.drop_all()
-
-# ------------------------------------------------------------------  
 # Roll back everything done in each test
 # ------------------------------------------------------------------
 @pytest.fixture(autouse=True)
@@ -72,21 +62,17 @@ def session(db):
 # Factory helper: make_user(...)
 # ------------------------------------------------------------------
 @pytest.fixture
-def make_user(db):
-    def _factory(username="alice", email=None, password="secret", **extra):
-        if email is None:
-            email = f"{username}@test.com"
-        user = User.query.filter_by(username=username).first()
-        if user:
-            return user
-        user = User(username=username, email=email, **extra)
-        user.set_password(password)
-        user.created_at = datetime.utcnow()
-        db.session.add(user)
-        db.session.commit()
+def make_user():
+    def _factory(username="test", password="test123"):
+        user = User(
+            username=username,
+            email=f"{username}@example.com",
+            password_hash=generate_password_hash(password)
+        )
+        _db.session.add(user)
+        _db.session.commit()
         return user
     return _factory
-
 # -----------------------
 # Logged-In Client Fixture
 # -----------------------

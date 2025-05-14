@@ -9,29 +9,30 @@ def is_valid_email(email):
     return re.match(r"[^@]+@[^@]+\.[^@]+", email)
 
 @auth_bp.route('/signup', methods=['GET', 'POST'])
-
 def signup():
-    if not is_valid_email(email):
-        flash('Invalid email address', 'signup')
-        return redirect(url_for('auth.signup'))
-    
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
-    
-    if request.method == 'POST':
-        username = request.form['username'].strip().lower()
-        email = request.form['email']
-        password = request.form['password']
-        confirm_password = request.form['confirm_password']
 
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip().lower()
+        email = request.form.get('email', '').strip()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+
+        # Basic validations
         if not username or not email or not password or not confirm_password:
             flash('All fields are required', 'signup')
+            return redirect(url_for('auth.signup'))
+
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email) or not is_valid_email(email):
+            flash('Invalid email address', 'signup')
             return redirect(url_for('auth.signup'))
 
         if password != confirm_password:
             flash('Passwords do not match', 'signup')
             return redirect(url_for('auth.signup'))
 
+        # Uniqueness checks
         if User.query.filter_by(username=username).first():
             flash('Username already exists', 'signup')
             return redirect(url_for('auth.signup'))
@@ -40,12 +41,14 @@ def signup():
             flash('Email already exists', 'signup')
             return redirect(url_for('auth.signup'))
 
+        # Create new user
         user = User(username=username, email=email)
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
+        login_user(user)
         flash('Signup successful', 'signup')
-        return redirect(url_for('auth.signup'))
+        return redirect(url_for('main.dashboard'))
 
     return render_template('index.html')
 
