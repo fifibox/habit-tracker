@@ -1,3 +1,6 @@
+# Final cleanup commit – only test_monthly_route.py included
+
+
 def test_monthly_route_requires_login(client):
     response = client.get('/monthly', follow_redirects=True)
     assert b'login' in response.data  # redirected to login
