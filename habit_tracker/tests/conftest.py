@@ -33,6 +33,30 @@ def db(app):
     _db.session.remove()
     _db.drop_all()
     _db.create_all()
+
+import pytest
+from sqlalchemy import event
+from sqlalchemy.orm import sessionmaker
+
+@pytest.fixture(scope="function")
+def db_session(engine):
+    connection = engine.connect()
+    transaction = connection.begin()
+    Session = sessionmaker(bind=connection)
+    session = Session()
+
+    @event.listens_for(session, "after_transaction_end")
+    def restart_savepoint(session, transaction):
+        if transaction.nested and not transaction._parent.nested:
+            session.begin_nested()
+
+    session.begin_nested()  # Start SAVEPOINT
+
+    yield session
+
+    session.close()
+    transaction.rollback()
+    connection.close()
     
 # ------------------------------------------------------------------  
 # Test client fixture
