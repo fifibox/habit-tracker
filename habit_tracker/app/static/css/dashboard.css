@@ -6,7 +6,7 @@
     }
 
 section {
-    border: 4px solid black;
+    border: 3px solid black;
     border-radius: 10px;
     padding: 20px;
     background-color: white;
@@ -116,20 +116,13 @@ label {
 /* Responsive styles */
 @media (max-width: 1300px) {
     section{
-        max-width:350px;
-        }
-    }
-
-@media (max-width: 1070px) {
-    section{
-        max-width:320px;
-        margin:0;
-        }
-    }
-
-@media (max-width: 890px) {
-    section{
         max-width:400px;
+        }
+    }
+
+@media (max-width: 1200px) {
+    section{
+        max-width:550px;
         margin:0 50px;
         }
     }

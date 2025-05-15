@@ -36,22 +36,22 @@
     </nav>
 
     <!-- Small screen hamburger menu navbar -->
-    <nav class="navbar mobile-navbar" style="background: #fff; border-bottom: 2px solid #222;">
-      <a class="navbar-brand font-weight-bold" href="{{ url_for('main.dashboard')}}">Habit Tracker</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+    <nav class="navbar mobile-navbar">
+      <a class="navbar-brand font-weight-bold nav-btn" href="{{ url_for('main.dashboard')}}">Habit Tracker</a>
+      <button class="nav-btn navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="mainNavbar">
         <ul class="navbar-nav ml-auto">
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.dashboard')}}">Dashboard</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('main.profile')}}">Profile</a></li>
+          <li class="nav-item mt-3"><a class="nav-link" href="{{ url_for('main.profile')}}">Profile</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('main.weekly')}}">Weekly</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('main.monthly')}}">Monthly</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('main.yearly')}}">Yearly</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout')}}">Logout</a></li>
           <li class="nav-item">
             <a class="nav-link" href="javascript:void(0);" onclick="document.getElementById('sharePopup').style.display='flex'">Share 📨</a>
           </li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout')}}">Logout</a></li>
+
         </ul>
       </div>
     </nav>
