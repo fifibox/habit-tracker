@@ -230,6 +230,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentYear = new Date().getFullYear();
         initializeGrids(currentYear);
     });
+
+    // Dynamic sync legend color
+    const habitContainers = document.querySelectorAll('.habit-container');
+    const colors = window.habitChartColors || ['#4caf50', '#2196f3', '#ff9800', '#e91e63', '#9c27b0'];
+    habitContainers.forEach((container, index) => {
+        const legend = container.querySelector('.intensity-legend');
+        if (legend) {
+            const completedSpan = legend.querySelector('.completed-color');
+            if (completedSpan) {
+                completedSpan.style.background = colors[index % colors.length];
+            }
+        }
+    });
 });
 
 function initYearSelector() {
