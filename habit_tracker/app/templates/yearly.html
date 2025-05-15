@@ -15,17 +15,15 @@
                 <h3 class="habit-title">{{ habit.habit_name }}</h3>
             </div>
             <div class="yearly-grid-scroll">
-                <div class="github-style-grid" id="grid-{{ habit.id }}">
-                    <!-- JS 动态生成的网格 -->
-                </div>
+                <div class="github-style-grid" id="grid-{{ habit.id }}"></div>
             </div>
             <div class="grid-footer">
                 <div></div>
-                <div class="intensity-legend">
+                <div class="intensity-legend" id="legend-{{ habit.id }}">
                     <span class="legend-label">Not Completed</span>
                     <div class="legend-cell not-completed"></div>
                     <span class="legend-label">Completed</span>
-                    <div class="legend-cell completed"></div>
+                    <div class="legend-cell completed completed-color"></div>
                 </div>
             </div>
         </div>
