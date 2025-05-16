@@ -65,8 +65,13 @@ python run.py
 > 
 > These files should be placed in the project root directory. Contact the project maintainer to obtain these files. Do not commit these files to version control as they contain sensitive information.
 
-## Testing (To Be Added)
-This section will include how to run unit tests, if applicable.
+## Unit Testing, Selenium testing instructions
+1. For **Unit testing**, run following command from the root directory:
+- `$ python -m pytest -q`  
+
+2. For **Selenium testing**, run the following commands from root directory:
+- `$ python -m unittest systemTests.py` 
+- `$ python -m unittest sanityTests.py`
 
 ## Project Structure
 ```
