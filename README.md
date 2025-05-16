@@ -91,7 +91,7 @@ gc_2_app/                            ← GitHub repository directory
 ##  Database Management Scripts
 
 To change SQLAlchemy models by updating app/models.py, the following steps needs to be taken
-Below is the recommended **“backup → migrate → upgrade → backup → restore”** workflow:
+Below is the recommended **"backup → migrate → upgrade → backup → restore"** workflow:
 
 1. Backup (`python scripts/backup_db.py`)
 2. Edit your models.py
@@ -106,7 +106,7 @@ To keep your local SQLite database in sync, backed up, and pre-populated, we pro
 | Script               | Purpose                                                                     |
 | -------------------- | --------------------------------------------------------------------------- |
 | `backup_db.py`       | Snapshot your current `app/app.db` into a timestamped file under `backups/` |
-| `seed.py`            | Create a “seed” user and habit records so a fresh database isn’t empty.     |
+| `seed.py`            | Create a "seed" user and habit records so a fresh database isn't empty.     |
 | `restore_db.py`      | Restore the most recent backup over `app/app.db` for quick rollbacks.       |
 
 
@@ -146,3 +146,4 @@ python scripts/seed.py
 | Zaya Batnasan           | 24448191   |  erdenezaya      |
 | Divyanshu Brijesh Singh | 24322871   |  Divyanshus123   |
 
+> Note: AI tools (such as ChatGPT) and online resources were used to assist with code, debugging, and documentation in this project.
