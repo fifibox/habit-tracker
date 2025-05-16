@@ -1,84 +1,255 @@
 /* Basic Styling */
 body {  
-    font-family: 'Inter', sans-serif;
-    background-image: radial-gradient(#ccc 1.5px, transparent 1px); /* Dotted background pattern */
-    background-size: 27px 27px;
-    overflow: hidden; /* Prevent body from scrolling */
-  }
+  font-family: 'Inter', sans-serif;
+  background-image: radial-gradient(#ccc 1.5px, transparent 1px); /* Dotted background pattern */
+  background-size: 27px 27px;
+  overflow: hidden; /* Prevent body from scrolling */
+}
   
-  .outer-container {
-    width:92vw; /* Forces full width */
-    height:88vh; /* Forces full height */
-    max-width: 95%;
-    margin: 1.5rem 2rem 1.5rem 2rem;
-    padding: 20px 0;
-    border-radius: 3px;
-    border:3px solid black;
-    box-shadow: 4px 4px 0 4px rgba(0, 0, 0, 0.3);
-    position: relative; /* Set relative positioning for child elements */
-    overflow: auto; /* Hide overflow */
+.outer-container {
+  width:92vw; /* Forces full width */
+  height:88vh; /* Forces full height */
+  max-width: 95%;
+  margin: 1.5rem 2rem 1.5rem 2rem;
+  padding: 20px 0;
+  border-radius: 3px;
+  border:3px solid black;
+  box-shadow: 4px 4px 0 4px rgba(0, 0, 0, 0.3);
+  position: relative; /* Set relative positioning for child elements */
+  overflow: auto; /* Hide overflow */
 }
 
 .inner-container {
-    width: 90%;
-    margin: 0 auto;
-    padding: 40px;
-    margin-top: 20px;
-    border: 4px solid black;
-    border-radius: 10px;
-    background-color: white;
-    box-shadow: 4px 4px 0 4px rgba(0, 0, 0, 0.3);
-    }
+  width: 90%;
+  margin: 0 auto;
+  padding: 40px;
+  margin-top: 20px;
+  border: 3px solid black;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 4px 4px 0 4px rgba(0, 0, 0, 0.3);
+}
 
-    .navbar {
-        position: relative;     
-        width:100%;
-        background-color: transparent; 
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 0 1.5rem 0;
-        border-bottom: 3px solid black;
-        flex-wrap: wrap;
-        margin-bottom: 40px;
-        } 
+.navbar {
+  position: relative;     
+  width:100%;
+  background-color: transparent; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0 1.5rem 0;
+  border-bottom: 3px solid black;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+} 
   
-    .navbar-left{
-        display: flex;
-        gap: 1rem;
-        margin-left:25px;
-    
-        }
-    .navbar-right {
-    display: flex;
-    gap: 1rem;
-    margin-right:25px;
-    }
-    
-    .nav-btn {
-        font-family: 'Inter', sans-serif;
-        font-weight: 600;
-        font-size: 20px;
-        padding: 10px 20px;
-        border-radius: 50px;
-        background-color: white;
-        border: 4px solid black;
-        box-shadow: 4px 4px 0 4px rgba(0, 0, 0, 0.3); /* x y blur spread color */
-        cursor: pointer;
-        transition: all 0.2s ease;
-        }
-    /* highlight the active button */
-    .btn-active {
-    background-color: #FBCEB1;
-    }
+.navbar-left{
+  display: flex;
+  gap: 1rem;
+  margin-left:25px;
+}
 
-    .share-btn {
-        float:right;
-    }
+.navbar-right {
+  display: flex;
+  gap: 1rem;
+  margin-right:25px;
+}
+    
+.nav-btn {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  padding: 10px 20px;
+  border-radius: 50px;
+  background-color: white;
+  border: 3px solid black;
+  box-shadow: 3px 3px 0 3px rgba(0, 0, 0, 0.3); /* x y blur spread color */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* highlight the active button */
+.btn-active {
+  background-color: #FBCEB1;
+}
+
+.share-btn {
+  float:right;
+}
+
+/* Steak progress bar */
+.progress-container {
+  width: calc(100% - 6rem); /* Full width minus the gap on both sides */
+  height: 20px;
+  background-color: #ddd;
+  border: 2px solid black;
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  order: 2;            /* Makes sure it goes after the two boxes */
+  position: relative; /* Position it relative to the outer-container */    
+  top: 5px;       /* Add a gap on the bottom */
+  margin:0 1.5rem;
+}
+
+.progress-fill {
+  width: 25%;
+  height: 16px;
+  transition: width 0.5s ease;
+  display: block;
+}
+    
+.progress-icon {
+  position: absolute;
+  top: -22px;
+  left: 25%;
+  transform: translateX(-50%);
+  font-size: 18px;
+}
+
+/* Modal backdrop + animation */
+.share-popup {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s forwards;
+}
   
-  /* Responsive Adjustments */
-  @media (max-width: 862px) {
-    .navbar-right {
-        display: none; /* Hide the right side of the navbar */
-    }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    background: rgba(0, 0, 0, 0);
+  }
+  to {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(2px);
+  }
+}
+  
+/* Modal box styling */
+.share-content {
+  background: white;
+  padding: 2rem;
+  border: 3px solid black;
+  border-radius: 12px;
+  box-shadow: 6px 6px 0px #888;
+  width: 320px;
+  position: relative;
+  animation: popupScale 0.3s ease-out forwards;
+}
+  
+@keyframes popupScale {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+  
+/* Input styles */
+.share-content input,
+.share-content select {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 1rem;
+  border: 3px solid black;
+  border-radius: 4px;
+  font-size: 16px;
+}
+  
+/* Submit button */
+.share-content .btn {
+  width: 100%;
+  padding: 10px;
+  background: pink;
+  font-weight: bold;
+  border: 2px solid black;
+  border-radius: 20px;
+  box-shadow: 2px 2px 0px #444;
+}
+  
+/* Close button */
+.share-content .close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 20px;
+  font-weight: bold;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* default: only show desktop navbar */
+.desktop-navbar { display: flex; }
+.mobile-navbar { display: none; }
+
+/* custom breakpoint: show hamburger menu below 1200px */
+@media (max-width: 1111px) {
+  .desktop-navbar { display: none ; }
+  .mobile-navbar { display: flex ; }
+  .mobile-navbar {
+    padding-top:20px;
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
+  }
+  .mobile-navbar .navbar-nav {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  .outer-container {
+    padding-top: 0;
+  }
+}
+
+.navbar-toggler {
+  border: 2.5px solid #333 ;
+  background: #fff ;
+  border-radius: 6px ;
+  padding: 0.25rem 0.75rem ;
+  margin: 0 1rem;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(33,33,33,1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E") ;
+  background-color: transparent ;
+  width: 1.5em ;
+  height: 1.5em ;
+  display: inline-block ;
+  vertical-align: middle ;
+  content: "" ;
+}
+
+/* make navbar links and brand name black */
+.navbar .navbar-brand,
+.navbar .nav-link,
+.navbar .btn {
+  color: #222;
+}
+
+/* make navbar links and brand name black */
+.navbar .nav-link,
+.navbar .navbar-brand,
+.navbar .nav-btn {
+  color: #222;
+}
+
+/* make navbar links and brand name black */
+.navbar .nav-link.active,
+.navbar .nav-link:focus,
+.navbar .nav-link:hover,
+.navbar .nav-btn.active,
+.navbar .nav-btn:focus,
+.navbar .nav-btn:hover {
+  color: #111;
+}
+
+ul.flashes {
+  margin-top: 1.2em;
 }

@@ -13,19 +13,41 @@
     <main class="container">
         <section class="profile-container">
             <h2>User Information</h2>
-            <p><strong>Username:</strong> {{ user.username }}</p>
-            <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>Account Created:</strong> {{ user.created_at.strftime('%Y-%m-%d') }}</p>
-            <p><strong>Last Login:</strong> {{ user.last_login.strftime('%Y-%m-%d') }}</p>
+            {% if user.username %}
+                <p><strong>Username:</strong> {{ user.username }}</p>
+            {% else %}
+                <p><strong>Username:</strong> Not provided</p>
+            {% endif %}
+            {% if user.email %}
+                <p><strong>Email:</strong> {{ user.email }}</p>
+            {% else %}
+                <p><strong>Email:</strong> Not provided</p>
+            {% endif %}
+            <p><strong>Account Created:</strong> 
+                {% if user.created_at %}
+                    {{ user.created_at.strftime('%Y-%m-%d') }}</p>
+                {% else %}
+                    <p>No account created date available.</p>
+                {% endif %}
+            <p><strong>Last Login:</strong> 
+                {% if user.last_login %}
+                    {{ user.last_login.strftime('%Y-%m-%d') }}
+                {% else %}
+                    Not recorded
+                {% endif %}
+            </p>
 
         </section>
 
         <section class="profile-container">
             <form action="/update_username" method="POST">
-                <label for="new-username">New Username:</label>
-                <input type="text" id="new-username" name="new_username" required>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="form-group">
+                    <label for="new-username">New Username:</label>
+                    <input type="text" id="new-username" name="new_username" required>
+                </div>
                 <button type="submit">Update Username</button>
-                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% with messages = get_flashed_messages(with_categories=true, category_filter=['profile', 'profile_error']) %}
                     {% if messages %}
                         <ul class="flashes">
                             {% for category, message in messages %}
@@ -36,59 +58,99 @@
                 {% endwith %}
             </form>
             <form action="/update_email" method="POST">
-                <label for="new-email">New Email:</label>
-                <input type="email" id="new-email" name="new_email" required>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="form-group">
+                    <label for="new-email">New Email:</label>
+                    <input type="email" id="new-email" name="new_email" required>
+                </div>
                 <button type="submit">Update Email</button>
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    <ul class="flashes">
-                        {% for category, message in messages %}
-                            <li class="{{ category }}">{{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            {% endwith %}
+                
+                {% with messages = get_flashed_messages(with_categories=true, category_filter=['profile', 'profile_error']) %}
+                    {% if messages %}
+                        <ul class="flashes">
+                            {% for category, message in messages %}
+                                <li class="{{ category }}">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+
             </form>
             <form action="/update_password" method="POST">
-                <label for="current-password">Current Password:</label>
-                <input type="password" id="current-password" name="current_password" required>
-                <label for="new-password">New Password:</label>
-                <input type="password" id="new-password" name="new_password" required>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="form-group">
+                    <label for="current-password">Current Password:</label>
+                    <input type="password" id="current-password" name="current_password" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-password">New Password:</label>
+                    <input type="password" id="new-password" name="new_password" required>
+                </div>
                 <button type="submit">Update Password</button>
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    <ul class="flashes">
-                        {% for category, message in messages %}
-                            <li class="{{ category }}">{{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            {% endwith %}
+                {% with messages = get_flashed_messages(with_categories=true, category_filter=['profile', 'profile_error']) %}
+                    {% if messages %}
+                        <ul class="flashes">
+                            {% for category, message in messages %}
+                                <li class="{{ category }}">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
             </form>
         </section>
 
-        <section>
-            <h2>Database Data View</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Habit</th>
-                        <th>Status</th>
-                        <th>Created At</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for record in habits %}
-                    <tr>
-                        <td>{{ record.id }}</td>
-                        <td>{{ record.habit_name }}</td>
-                        <td>{{ record.records }}</td>
-                        <td>{{ record.created_at }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <section class="profile-container" id="shared-habits-container">
+            <h2>Shared Habits from your friends</h2>
+            {% for item in shared_habits_data %}
+              <div class="shared-habit yearly-grid-scroll">
+                <strong>From: </strong> <span>{{ item.sharer.username }}</span><br>
+                <strong>Habit: </strong> <span>{{ item.habit.habit_name }}</span>
+                <div id="shared-habit-grid-{{ item.habit.id }}" class="github-style-grid" style="margin-bottom: 40px;"></div>
+              </div>
+            {% else %}
+              <p>No shared habits with you yet.</p>
+            {% endfor %}
         </section>
     </main>
+
+    <!-- Modal for share button -->
+    {% include 'share_modal.html' %}
+    
+    <script src="{{ url_for('static', filename='js/yearly.js') }}"></script>
+    <script>
+        var sharedHabitsData = {{ shared_habits_data|tojson|safe }};
+        var year = new Date().getFullYear();
+        var colors = ['#4caf50', '#2196f3', '#ff9800', '#e91e63', '#9c27b0']; 
+
+        // Move the transformation function outside the loop
+        function recordsArrayToMap(records) {
+            const map = {};
+            records.forEach(r => {
+                map[r.date] = {
+                    intensity: r.completed ? 1 : 0,
+                    notes: r.notes || ""
+                };
+            });
+            return map;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            for (var i = 0; i < sharedHabitsData.length; i++) {
+                var habit = sharedHabitsData[i].habit;
+
+                console.log("Habit ID:", habit.id);
+                var recordMap = recordsArrayToMap(sharedHabitsData[i].records); // transform here
+                var color = colors[i % colors.length];
+                var containerId = 'shared-habit-grid-' + habit.id;
+
+                const container = document.getElementById(containerId); 
+                console.log("Container ID:", containerId, "Exists?", !!container);
+                    if (container) {
+                    generateAnnualGrid(containerId, year, recordMap, color);
+                } else {
+                    console.warn("Missing container for:", containerId);
+                }
+            }
+        });
+    </script>
 {% endblock %}

@@ -1,9 +1,14 @@
-from flask import render_template, redirect, url_for, request, flash, jsonify
+from flask import render_template, redirect, url_for, request, flash, jsonify, current_app
 from flask_login import login_required, current_user
+from app.forms import ShareHabitForm, PasswordResetRequestForm, ResetPasswordForm
 from app import db
-from app.models import Habit, HabitRecord, SharedSnippet, User
+from app.models import Habit, HabitRecord, User, SharedHabit
 from datetime import datetime, timedelta
 from . import main_bp
+from .controller import create_default_habits, get_habit_color, calculate_streak, get_weekly_completion, generate_reset_token, verify_reset_token
+from app.config import COLOR_PALETTE, COLOR_GRADIENTS, PROGRESS_BAR_GRADIENT
+from app.gmail_api import send_gmail
+from calendar import monthrange
 
 # ------------------------------------------------------------------
 # Public landing page
@@ -11,120 +16,12 @@ from . import main_bp
 @main_bp.route("/")
 def home():
     """Render the landing page"""
-    return render_template("index.html")
-
-# ------------------------------------------------------------------
-# Helper functions
-# ------------------------------------------------------------------
-def create_default_habits(user_id):
-    """Create default habits for new users"""
-    # Default habit names
-    default_habits = [
-        "Wake up early",
-        "Drink water",
-        "No takeout",
-        "Meditate"
-    ]
-    
-    # Check if user already has habits
-    existing_count = Habit.query.filter_by(user_id=user_id).count()
-    if existing_count > 0:
-        return  # User already has habits
-    
-    # Create default habits
-    for habit_name in default_habits:
-        habit = Habit(
-            habit_name=habit_name,
-            user_id=user_id
-        )
-        db.session.add(habit)
-    
-    db.session.commit()
-
-def get_habit_color(habit_name):
-    _last_color_index = -1
-    """Return the CSS color class based on habit name"""
-    colors = ["green", "red", "blue", "purple"]
-    _last_color_index = (_last_color_index + 1) % 4
-    return colors[_last_color_index]
-
-def calculate_streak(habit_id):
-    """Calculate current streak for a habit
-    
-    Returns the number of consecutive days the habit has been completed
-    leading up to today.
-    """
-    today = datetime.now().date()
-    
-    # Check if habit was completed today
-    today_record = HabitRecord.query.filter_by(
-        habit_id=habit_id,
-        date=today,
-        completed=True
-    ).first()
-    
-    if not today_record:
-        # Check if there's a streak that ended yesterday
-        yesterday = today - timedelta(days=1)
-        yesterday_record = HabitRecord.query.filter_by(
-            habit_id=habit_id,
-            date=yesterday,
-            completed=True
-        ).first()
-        
-        if not yesterday_record:
-            return 0
-        
-        # Count streak days that ended yesterday
-        streak = 1
-        current_date = yesterday - timedelta(days=1)
-    else:
-        # Count streak days including today
-        streak = 1
-        current_date = today - timedelta(days=1)
-    
-    # Count consecutive days going backward
-    while True:
-        record = HabitRecord.query.filter_by(
-            habit_id=habit_id,
-            date=current_date,
-            completed=True
-        ).first()
-        
-        if not record:
-            break
-            
-        streak += 1
-        current_date -= timedelta(days=1)
-    
-    return streak
-
-def get_weekly_completion(habit_id):
-    """Get weekly completion data for a habit
-    
-    Returns tuple: (completed_days, total_days)
-    """
-    today = datetime.now().date()
-    start_date = today - timedelta(days=6)  # Last 7 days including today
-    
-    # Get all habit records in date range
-    records = HabitRecord.query.filter(
-        HabitRecord.habit_id == habit_id,
-        HabitRecord.date >= start_date,
-        HabitRecord.date <= today,
-        HabitRecord.completed == True
-    ).all()
-    
-    completed_days = len(records)
-    total_days = 7  # Last 7 days
-    
-    return (completed_days, total_days)
-
+    return render_template("index.html", reset_token_form=ResetPasswordForm())
 
 # ------------------------------------------------------------------
 # Auth-protected pages
 # ------------------------------------------------------------------
-@main_bp.route("/dashboard")
+@main_bp.route("/dashboard",methods=["GET", "POST"])
 @login_required
 def dashboard():
     """Render the dashboard with today's habits and stats"""
@@ -143,6 +40,9 @@ def dashboard():
     habit_data = []
     total_habits = len(habits)
     completed_count = 0
+
+    # Calculate streak
+    streak = calculate_streak(current_user.id)
     
     # For each habit, get completion status and statistics
     for habit in habits:
@@ -157,37 +57,36 @@ def dashboard():
         if is_completed:
             completed_count += 1
         
-        # Calculate streak
-        streak = calculate_streak(habit.id)
-        
         # Calculate weekly completion (e.g., "6/7")
         completed_days, total_days = get_weekly_completion(habit.id)
         completion_rate = f"{completed_days}/{total_days}"
-        
-        # Get color class based on habit name
-        color_class = get_habit_color(habit.habit_name)
         
         # Add to habit data list
         habit_data.append({
             "id": habit.id,
             "name": habit.habit_name,
             "completed": is_completed,
-            "streak": streak,
             "completion_rate": completion_rate,
             "completion_percent": (completed_days / total_days * 100) if total_days > 0 else 0,
-            "color_class": color_class
-        })
+        })  
+
+    form = ShareHabitForm()
     
-    # Calculate max streak for progress bar
-    max_streak = max([h["streak"] for h in habit_data]) if habit_data else 0
-    
+    # Populate habit choices for dropdown
+    user_habits = Habit.query.filter_by(user_id=current_user.id).all()
+    form.habit.choices = [(h.id, h.habit_name) for h in user_habits]
+
     return render_template(
         "dashboard.html",
         active_page="dashboard",
         habits=habit_data,
         completed_count=completed_count,
         total_habits=total_habits,
-        max_streak=max_streak
+        streak=streak,
+        colors=COLOR_PALETTE,
+        gradients=COLOR_GRADIENTS,
+        progress_gradient=PROGRESS_BAR_GRADIENT,
+        form=form,
     )
 
 @main_bp.route("/weekly")
@@ -206,13 +105,14 @@ def weekly():
     
     # Initialize habits data for the template
     habits_data = []
+
+    # Calculate streak
+    streak = calculate_streak(current_user.id)
+
     for habit in habits:
         # Get weekly completion data
         completed_days, total_days = get_weekly_completion(habit.id)
         completion_percentage = (completed_days / total_days * 100) if total_days > 0 else 0
-        
-        # Check if habit has a streak
-        has_streak = calculate_streak(habit.id) >= 3  # Arbitrary threshold
         
         habits_data.append({
             "id": habit.id,
@@ -220,14 +120,22 @@ def weekly():
             "completion_percentage": completion_percentage,
             "completed_days": completed_days,
             "total_days": total_days,
-            "has_streak": has_streak
         })
     
+    form = ShareHabitForm()
+    # Populate habit choices for dropdown
+    user_habits = Habit.query.filter_by(user_id=current_user.id).all()
+    form.habit.choices = [(h.id, h.habit_name) for h in user_habits]
+
     return render_template(
         "weekly.html",
         active_page="weekly",
         habits=habits_data,
-        date_range=date_range
+        date_range=date_range,
+        streak=streak,
+        colors=COLOR_PALETTE,
+        progress_gradient=PROGRESS_BAR_GRADIENT,
+        form=form,
     )
 
 @main_bp.route("/monthly")
@@ -236,11 +144,23 @@ def monthly():
     """Render the monthly habits view"""
     # Get current user's habits
     habits = Habit.query.filter_by(user_id=current_user.id).all()
+
+    # Calculate streak
+    streak = calculate_streak(current_user.id)
+    form = ShareHabitForm()
+    
+    # Populate habit choices for dropdown
+    user_habits = Habit.query.filter_by(user_id=current_user.id).all()
+    form.habit.choices = [(h.id, h.habit_name) for h in user_habits]
     
     return render_template(
         "monthly.html",
         active_page="monthly",
-        habits=habits
+        habits=habits,
+        streak=streak,
+        progress_gradient=PROGRESS_BAR_GRADIENT,
+        form=form,
+        colors=COLOR_PALETTE,
     )
 
 @main_bp.route("/yearly")
@@ -249,11 +169,23 @@ def yearly():
     """Render the yearly habits view"""
     # Get current user's habits
     habits = Habit.query.filter_by(user_id=current_user.id).all()
+
+    # Calculate streak
+    streak = calculate_streak(current_user.id)
+    form = ShareHabitForm()
     
+    # Populate habit choices for dropdown
+    user_habits = Habit.query.filter_by(user_id=current_user.id).all()
+    form.habit.choices = [(h.id, h.habit_name) for h in user_habits]
+
     return render_template(
         "yearly.html",
         active_page="yearly",
-        habits=habits
+        habits=habits,
+        streak=streak,
+        colors=COLOR_PALETTE,
+        progress_gradient=PROGRESS_BAR_GRADIENT,
+        form=form,
     )
 
 # ------------------------------------------------------------------
@@ -399,8 +331,82 @@ def toggle_habit(habit_id):
         })
     
     # Return to dashboard for regular form submissions
-    flash(f"Habit '{habit.habit_name}' {status_msg}", "success")
+    flash(f"Habit '{habit.habit_name}' {status_msg} for {record_date.strftime('%Y-%m-%d')}", "success")
     return redirect(url_for("main.dashboard"))
+
+@main_bp.route("/habits_by_date", methods=["GET"])
+@login_required
+def habits_by_date():
+    """Display habits based on the selected date"""
+    # Get the selected date from the query parameters
+    date_str = request.args.get("date")
+    if not date_str:
+        return jsonify({"success": False, "error": "Date is required"}), 400
+
+    try:
+        selected_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+    except ValueError:
+        return jsonify({"success": False, "error": "Invalid date format"}), 400
+
+    # Get the current user's habits
+    habits = Habit.query.filter_by(user_id=current_user.id).all()
+
+    # Prepare habit data for the selected date
+    habit_data = []
+    for habit in habits:
+        # Check if the habit is completed on the selected date
+        record = HabitRecord.query.filter_by(
+            habit_id=habit.id,
+            date=selected_date
+        ).first()
+
+        is_completed = bool(record and record.completed)
+        habit_data.append({
+            "id": habit.id,
+            "name": habit.habit_name,
+            "completed": is_completed,
+        })
+
+    return jsonify({"success": True, "habits": habit_data})
+
+@main_bp.route("/save_habit_statuses", methods=["POST"])
+@login_required
+def save_habit_statuses():
+    """Save habit statuses for a specific date"""
+    data = request.get_json()
+    if not data:
+        return jsonify({"success": False, "error": "Invalid JSON data"}), 400
+
+    date_str = data.get("date")
+    habits = data.get("habits")
+    if not date_str or not habits:
+        return jsonify({"success": False, "error": "Date and habits are required"}), 400
+
+    try:
+        record_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+    except ValueError:
+        return jsonify({"success": False, "error": "Invalid date format"}), 400
+
+    for habit_data in habits:
+        habit_id = habit_data.get("habit_id")
+        completed = habit_data.get("completed")
+
+        habit = Habit.query.get(habit_id)
+        if not habit or habit.user_id != current_user.id:
+            continue  # Skip invalid or unauthorized habits
+
+        # Find or create the record
+        record = HabitRecord.query.filter_by(habit_id=habit_id, date=record_date).first()
+        if record:
+            record.completed = completed
+        else:
+            record = HabitRecord(habit_id=habit_id, date=record_date, completed=completed)
+            db.session.add(record)
+
+    # Commit the changes to the database
+    db.session.commit()
+
+    return jsonify({"success": True})
 
 # ------------------------------------------------------------------
 # API routes for data visualization
@@ -464,46 +470,89 @@ def get_habit_data_api(habit_id):
 # ------------------------------------------------------------------
 # Route for sharing charts
 # ------------------------------------------------------------------
-@main_bp.route('/share_snippet', methods=['POST'])
+@main_bp.route("/share_habit", methods=["POST"])
 @login_required
-def share_snippet():
-    receiver_username = request.form.get('receiver_username')
-    message = request.form.get('message')
+def share_habit():
+    form = ShareHabitForm()
+    user_habits = Habit.query.filter_by(user_id=current_user.id).all()
+    form.habit.choices = [(h.id, h.habit_name) for h in user_habits]
 
-    receiver = User.query.filter_by(username=receiver_username).first()
-    if not receiver:
-        flash('User not found.', 'danger')
-        return redirect(url_for('main.dashboard'))
+    if form.validate_on_submit():
+        habit_id = form.habit.data
+        username = form.recipient.data
 
-    snippet = SharedSnippet(
-        sender_id=current_user.id,
-        receiver_id=receiver.id,
-        message=message
-    )
-    db.session.add(snippet)
-    db.session.commit()
+        recipient = User.query.filter_by(username=username).first()
+        if not recipient:
+            flash("User not found", "danger")
+        else:
+            shared = SharedHabit(
+                habit_id=habit_id,
+                shared_by=current_user.id,
+                shared_with=recipient.id
+            )
+            db.session.add(shared)
+            db.session.commit()
+            flash("Habit shared successfully!", "success")
 
-    flash('Shared successfully!', 'success')
-    return redirect(url_for('main.dashboard'))
+        return redirect(request.referrer or url_for("main.dashboard"))
+
+    flash("Invalid form", "danger")
+    return redirect(request.referrer or url_for("main.dashboard"))
 
 # ------------------------------------------------------------------
 # Profile management page
 # ------------------------------------------------------------------
-
 @main_bp.route("/profile")
 @login_required
 def profile():
     """Render the user profile page"""
     # Get current user's habits
     habits = Habit.query.filter_by(user_id=current_user.id).all()
+
+    # Calculate streak
+    streak = calculate_streak(current_user.id)
     
+    # Query others' habits shared with current user
+    shared_habits = SharedHabit.query.filter_by(shared_with=current_user.id).all()
+    shared_habits_data = []
+    for sh in shared_habits:
+        habit = sh.habit
+        if not habit:
+            continue
+        # Get records for the shared habit
+        records = habit.records
+        shared_habits_data.append({
+            'habit': {
+                'id': habit.id,
+                'habit_name': habit.habit_name,
+            },
+            'records': [
+                {
+                    'id': r.id,
+                    'date': r.date.strftime('%Y-%m-%d'),
+                    'completed': r.completed
+                } for r in records
+            ],
+            'sharer': {
+                'id': sh.sharer.id,
+                'username': sh.sharer.username
+            }
+        })
+    form = ShareHabitForm()
+    
+    # Populate habit choices for dropdown
+    user_habits = Habit.query.filter_by(user_id=current_user.id).all()
+    form.habit.choices = [(h.id, h.habit_name) for h in user_habits]
     return render_template(
         "profile.html",
         active_page="profile",
         user=current_user,
         database_data = db.session.query(HabitRecord).all(),
-        shared_snippets = db.session.query(SharedSnippet).filter_by(receiver_id=current_user.id).all(),
-        habits=habits
+        habits=habits,
+        streak = streak,
+        progress_gradient = PROGRESS_BAR_GRADIENT,
+        shared_habits_data=shared_habits_data,
+        form=form
     )
 
 @main_bp.route("/update_username", methods=["POST"])
@@ -571,3 +620,65 @@ def update_password():
     db.session.commit()
     flash("Password updated successfully!", "profile")
     return redirect(url_for("main.profile"))
+
+@main_bp.route('/reset_password', methods=['GET', 'POST'])
+def reset_request():
+    form = PasswordResetRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            token = generate_reset_token(user)
+            reset_url = url_for('main.reset_token', token=token, _external=True)
+            subject = 'Password Reset Request'
+            body = f'''To reset your password, visit the following link:
+{reset_url}
+
+If you did not make this request, simply ignore this email.
+'''
+            send_gmail(user.email, subject, body)
+        flash('If your email is registered, you will receive a password reset link.', 'info')
+        return redirect(url_for('auth.login'))
+    return render_template('reset_request.html', form=form)
+
+@main_bp.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_token(token):
+    user = verify_reset_token(token)
+    form = ResetPasswordForm()
+    if not user:
+        flash('That is an invalid or expired token', 'warning')
+        return redirect(url_for('main.reset_request'))
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        db.session.commit()
+        flash('Your password has been updated!', 'success')
+        return redirect(url_for('auth.login'))
+    return render_template(
+        'index.html',
+        reset_token_form=form,
+        show_reset_token_modal=True,
+        token=token
+    )
+
+@main_bp.route("/api/monthly_habits")
+@login_required
+def api_monthly_habits():
+    year = request.args.get("year", default=datetime.now().year, type=int)
+    month = request.args.get("month", default=datetime.now().month, type=int)
+    habits = Habit.query.filter_by(user_id=current_user.id).all()
+    result = []
+    for idx, habit in enumerate(habits):
+        days_in_month = monthrange(year, month)[1]
+        days = []
+        for day in range(1, days_in_month + 1):
+            date = datetime(year, month, day).date()
+            record = HabitRecord.query.filter_by(habit_id=habit.id, date=date).first()
+            days.append({
+                "date": date.strftime("%Y-%m-%d"),
+                "completed": bool(record and record.completed)
+            })
+        result.append({
+            "name": habit.habit_name,
+            "color": COLOR_PALETTE[idx % len(COLOR_PALETTE)],
+            "days": days
+        })
+    return jsonify(result)

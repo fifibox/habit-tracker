@@ -6,7 +6,7 @@
     }
 
 section {
-    border: 4px solid black;
+    border: 3px solid black;
     border-radius: 10px;
     padding: 20px;
     background-color: white;
@@ -22,7 +22,6 @@ h1 {
     .habit-item {
         display: flex;
         justify-content: space-between; 
-        align-items: center; 
         margin: 15px 0;
         font-size: 1.2rem;
     }
@@ -96,65 +95,57 @@ h1 {
     left: 0;
     }
 
-.green { background-color: #34BB61; width: 86%; } /* 6/7 */
-.red { background-color: #FF786F; width: 100%; } /* 7/7 */
-.blue { background-color: #0D99FF; width: 100%; }
-.purple { background-color: #AF75F1; width: 86%; }
-
-/* Steak progress bar */
-.progress-container {
-    width: calc(100% - 3rem); /* Full width minus the gap on both sides */
-    height: 20px;
-    background-color: #ddd;
-    border: 2px solid black;
-    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
-    order: 2;            /* Makes sure it goes after the two boxes */
-    position: relative; /* Position it relative to the outer-container */    
-    bottom: 0.5rem;       /* Add a gap on the bottom */
-    margin:0 1.5rem;
-}
-
-.progress-fill {
-    width: 25%;
-    height: 20px;
-    background-color: #f7e17c;
-    display: block;
+label {
+    font-size: 1.2rem;
+    margin-left: 10px;
     }
-    
 
-.progress-icon {
-    position: absolute;
-    top: -22px;
-    left: 25%;
-    transform: translateX(-50%);
+.save-btn {
+    padding: 8px 16px;
+    background-color: white;
+    border: 3.5px solid black;
+    border-radius: 25px;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 2px rgba(0,0,0,0.4);
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;     /* Semi Bold */
     font-size: 18px;
-    }
+    margin-top: 20px;
+}
 
 /* Responsive styles */
 @media (max-width: 1300px) {
     section{
-        max-width:350px;
+        max-width:500px;
         }
+    #input-field{
+        width:70%;
+    }
     }
 
-@media (max-width: 1070px) {
-    section{
-        max-width:320px;
-        margin:0;
-        }
-    }
-
-@media (max-width: 890px) {
+@media (max-width: 1200px) {
     section{
         max-width:400px;
-        margin:0 50px;
         }
     }
 
-@media (max-width: 862px) {
-    .progress-container{
-        margin-top:2rem;
-        width: 70%; /* Full width minus the gap on both sides */
-        position: relative;
-        }
-    }
+/* Go button */
+.dashboard-go-btn {
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4em 1.2em;
+  font-size: 1.05rem;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+  margin-left: 0.5rem;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.08);
+}
+
+.dashboard-go-btn:hover,
+.dashboard-go-btn:focus {
+  background: #444;
+  color: #fff;
+  outline: none;
+}

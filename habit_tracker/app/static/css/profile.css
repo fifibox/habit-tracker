@@ -30,39 +30,38 @@ section h2 {
 }
 
 /* Section styling */
-form{
+.profile-container form{
     display: flex;
     gap: 1rem;
-    padding: 1rem;
-    border-radius: 12px;
-    background-color: #fff;
-    box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+    padding: 0.2rem;
 }
 /* Labels and Inputs */
-form label {
+.profile-container form label {
     display: inline-block;
     width: 160px;
     margin-bottom: 0.5rem;
-    font-weight: bold;
+    font-weight: semi-bold;
 }
 
-form button{
-    width: 200px;
+.profile-container form button{
+    width: 180px;
+    height: 40px;
 }
 
-form input[type="text"],
-form input[type="email"],
-form input[type="password"] {
+.profile-container form input[type="text"],
+.profile-container form input[type="email"],
+.profile-container form input[type="password"] {
     padding: 0.4rem 0.6rem;
-    width: 200px;
+    width: 180px;
     border: 1px solid #aaa;
     border-radius: 8px;
     font-size: 1rem;
 }
 
 /* Buttons */
-form button {
+.profile-container form button {
     display: inline-block;
+    height: 40px;
     background-color: #222;
     color: #fff;
     border: none;
@@ -71,7 +70,7 @@ form button {
     transition: background-color 0.3s ease;
 }
 
-form button:hover {
+.profile-container form button:hover {
     background-color: #444;
     cursor: pointer;
 }
@@ -100,19 +99,207 @@ table tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
+#shared-habits-container {
+    margin-top: 2rem;
+}
+
+#shared-habits-container strong,span {
+    color: #00000092;
+}
+/* Modal backdrop + animation */
+.share-popup {
+    display: none;  
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s forwards;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      background: rgba(0, 0, 0, 0);
+    }
+    to {
+      opacity: 1;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(2px);
+    }
+  }
+  
+  /* Share modal box styling */
+  .share-content {
+    background: white;
+    padding: 2rem;
+    border: 3px solid black;
+    border-radius: 12px;
+    box-shadow: 6px 6px 0px #888;
+    width: 320px;
+    position: relative;
+    animation: popupScale 0.3s ease-out forwards;
+  }
+  
+  @keyframes popupScale {
+    0% {
+      transform: scale(0.6);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  /* Input styles */
+  .share-content input,
+  .share-content select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 1rem;
+    border: 3px solid black;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  /* Submit button */
+  .share-content .btn {
+    width: 100%;
+    padding: 10px;
+    background: pink;
+    font-weight: bold;
+    border: 2px solid black;
+    border-radius: 20px;
+    box-shadow: 2px 2px 0px #444;
+  }
+  
+  /* Close button */
+  .share-content .close {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+
+/* GitHub-style grid layout */
+.github-style-grid {
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 10px;
+    position: relative; /* Needed for absolute positioning */
+}
+
+/* Grid container */
+.grid-container {
+    display: flex;
+    margin-left: 40px; /* Space for day labels */
+}
+
+/* Day of week labels */
+.day-labels {
+    position: absolute;
+    left: 20px;
+    top: 50px; /* Align with grid cells */
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.day-label {
+    height: 15px;
+    line-height: 15px;
+    text-align: right;
+    padding-right: 5px;
+    font-size: 12px;
+    color: #666;
+    width: 30px;
+}
+
+/* Month labels */
+.month-labels {
+    position: absolute;
+    top: 20px;
+    left: 60px; /* Align with grid cells */
+    display: flex;
+    width: calc(53 * 17px); /* Account for 53 columns plus gaps */
+    justify-content: space-between; /* Distribute months evenly */
+    padding-right: 15px; /* Add some padding on the right */
+}
+
+.month-label {
+    font-size: 12px;
+    color: #666;
+    /* Remove padding-right since we're using space-between */
+    flex: 0 0 auto; /* Don't grow or shrink */
+}
+
+/* Cells grid */
+.cells-grid {
+    display: grid;
+    grid-template-columns: repeat(53, 15px);
+    grid-template-rows: repeat(7, 15px);
+    gap: 2px;
+    margin-top: 30px; /* Space for month labels */
+}
+
+.grid-cell {
+    width: 15px;
+    height: 15px;
+    background-color: #ebedf0;
+    border-radius: 2px;
+}
+
+.grid-cell.completed {
+    background-color: #239a3b;
+}
+
+.grid-cell.empty {
+    background-color: transparent;
+}
+
 /* Responsive behavior (optional) */
-@media screen and (max-width: 768px) {
-    form label {
-        display: block;
-        width: 100%;
-    }
+/* Yearly grid scroll */
+@media (max-width: 1270px) {
+  .yearly-grid-scroll {
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 10px;
+  }
+  .github-style-grid {
+    min-width: 800px;
+  }
+}
 
-    form input {
-        width: 100%;
-    }
+@media (max-width: 985px) {
+  .profile-container form button {
+    width: auto;
+    min-width: 130px;
+    font-size: 0.8rem;
+    align-self: flex-end;
+    margin-bottom: 1rem;
+    display: inline-block;
+  }
+}
 
-    .profile-container,
-    section {
-        padding: 1rem;
-    }
+@media (max-width: 771px) {
+  .profile-container form button {
+    width: auto;
+    min-width: 100px;
+    font-size: 0.7rem;
+    align-self: flex-end;
+    margin-bottom: 1rem;
+    display: inline-block;
+  }
+}
+
+@media (max-width: 600px) {
+  .profile-container form {
+    display:block;
+  }
 }

@@ -1,11 +1,11 @@
-/* Basic Styling */
+/* Index page Styling */
 body {  
     font-family: 'Inter', sans-serif;
     background-image: radial-gradient(#ccc 1.5px, transparent 1px); /* Dotted background pattern */
     background-size: 27px 27px;
     overflow: hidden; /* Prevent body from scrolling */
   }
-
+  
   .outer-container {
     max-width: 95%;
     display:flex;
@@ -177,4 +177,69 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+}
+
+footer p {
+  font-family:  'Merriweather', serif;
+  font-size: 1.4rem;
+  color: #555;
+}
+
+.type-cursor {
+  display: inline-block;
+  color: #333;
+  font-weight: bold;
+  animation: blink-caret 0.75s step-end infinite;
+}
+
+@keyframes blink-caret {
+  from, to { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.quote-text {
+  font-family: 'Merriweather', serif;
+  font-size: 1.3rem;
+  color: #444;
+  font-style: italic;
+  letter-spacing: 0.03em;
+  text-align: center;
+  margin-bottom: 0;
+  margin-top: 1.5rem;
+  position: relative;
+  display: inline-block;
+  max-width: 90vw;
+}
+
+.quote-text::before {
+  content: '“';
+  font-size: 2.2rem;
+  color: #bbb;
+  position: relative;
+  top: 0.3em;
+  left: -0.2em;
+}
+
+.quote-text::after {
+  content: '”';
+  font-size: 2.2rem;
+  color: #bbb;
+  position: relative;
+  top: 0.3em;
+  right: -0.2em;
+}
+
+.quote-author {
+  display: block;
+  font-size: 1.1rem;
+  color: #888;
+  font-style: normal;
+  margin-top: 0.5em;
+  letter-spacing: 0.1em;
+}
+
+.signup-btn {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
