@@ -186,15 +186,6 @@ body {
   cursor: pointer;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 862px) {
-.progress-container{
-  margin-top:2rem;
-  width: 70%; /* Full width minus the gap on both sides */
-  position: relative;
-  }
-}
-
 /* default: only show desktop navbar */
 .desktop-navbar { display: flex; }
 .mobile-navbar { display: none; }
