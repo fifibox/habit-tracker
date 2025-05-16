@@ -2,24 +2,39 @@
 
 This is a Flask-based web application that helps users track their daily habits and visualize their progress over time. It is designed to be lightweight, user-friendly, and insightful for anyone looking to improve their routines or build new ones.
 
-## Features (To Be Added)
+## Purpose & Design
 
-- 📝 Register and log in to your account
-- ➕ Add custom habits to track (e.g., sleep, steps, diet)
-- 📈 Upload or log daily habit data
-- 📊 Visualize your habits with graphs and charts
-- 🤝 Share specific insights or stats with other users
-- 🔒 Privacy-aware: your data is private by default
+**Habit Tracker** is built to help users form and maintain positive daily habits.  
+The app allows you to create custom habits, log your progress, and visualize your achievements through interactive charts and annual grid views.  
+A key feature is the ability to share your yearly progress grid with friends, supporting motivation and accountability in a private, secure environment.
+
+- **Design:**  
+  - Clean, modern interface with responsive design.
+  - Secure authentication, CSRF protection, and password reset via email.
+  - Data privacy: all user data is private by default and only shared with explicit consent.
+  - Visualizations (charts, grids) make progress easy to understand at a glance.
+  - Modular codebase for easy maintenance and extension.
+
+## Features
+
+- 📝 Register and log in to your account securely
+- ➕ Add and manage custom habits (e.g., sleep, steps, diet)
+- 📈 Log daily habit completion with a simple interface
+- 📊 Visualize your progress with interactive graphs and annual grid charts
+- 🤝 Share your yearly habit grid with other users in-app
+- 👀 View shared grids from friends
 
 ## Tech Stack
 
-- **Backend:** Python + Flask
-- **Frontend:** HTML, CSS, Bootstrap, jQuery
+- **Backend:** Python, Flask, Flask-Login, Flask-WTF
+- **Frontend:** HTML, CSS, Bootstrap, JavaScript
 - **Database:** SQLite (via SQLAlchemy)
-- **Interactivity:** AJAX
+- **Interactivity:** AJAX, Fetch API
+- **Email Integration:** Gmail API (for password reset)
+- **Testing:** unittest, Selenium
 - **Version Control:** Git + GitHub
 
-## Getting Started (To Be Added)
+## Getting Started
 This section will include how to launch the application.
 
 1. git clone …
@@ -40,7 +55,7 @@ This section will include how to launch the application.
 ## Testing (To Be Added)
 This section will include how to run unit tests, if applicable.
 
-## Project Structure (Updated)
+## Project Structure
 ```
 gc_2_app/                            ← GitHub repository directory
 ├── habit_tracker/               ← Flask main application folder
