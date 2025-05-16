@@ -57,7 +57,7 @@ def db_session(engine):
     session.close()
     transaction.rollback()
     connection.close()
-    
+
 # ------------------------------------------------------------------  
 # Test client fixture
 # ------------------------------------------------------------------
@@ -88,6 +88,7 @@ def session(db):
 @pytest.fixture
 def make_user():
     def _factory(username="test", password="test123"):
+        username = username or f"user_{uuid.uuid4().hex[:8]}"
         user = User(
             username=username,
             email=f"{username}@example.com",
@@ -107,3 +108,24 @@ def logged_in_client(client, make_user):
     with client.session_transaction() as sess:
         sess["user_id"] = user.id  # This depends on your login manager
     return client
+import pytest
+
+# -----------------------
+# Monthly Route Fixture
+# -----------------------
+
+@pytest.fixture
+def auth(client, make_user):
+    class AuthActions:
+        def login(self, username="test", password="test123"):
+            make_user(username=username, password=password)
+            return client.post(
+                "/auth/login",
+                data={"username": username, "password": password},
+                follow_redirects=True
+            )
+
+        def logout(self):
+            return client.get("/auth/logout", follow_redirects=True)
+
+    return AuthActions()

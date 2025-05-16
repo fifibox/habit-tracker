@@ -5,7 +5,7 @@ body {
     background-size: 27px 27px;
     overflow: hidden; /* Prevent body from scrolling */
   }
-
+  
   .outer-container {
     max-width: 95%;
     display:flex;

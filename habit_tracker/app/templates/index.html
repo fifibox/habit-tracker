@@ -66,25 +66,27 @@
         <div id="signupForm" class="form-popup">
           <div class="form-content">
             <button class="close-btn form-btn" onclick="closeSignupForm()">×</button>
-            <form method="POST" action="{{ url_for('auth.signup') }}">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <label>Username:</label>
-              <input type="text" name="username" required>
-              <label>Email:</label>
-              <input type="email" name="email" required>
-              <label>Password:</label>
-              <input type="password" name="password" required>
-              {% with messages = get_flashed_messages(category_filter=['signup']) %}
-                {% if messages %}
-                  <ul class="flashes">
-                    {% for message in messages %}
-                      <li>{{ message }}</li>
-                    {% endfor %}
-                  </ul>
-                {% endif %}
-              {% endwith %}
-              <button type="submit" class="signup-btn form-btn">Sign Up</button>
-            </form>
+              <form method="POST" action="{{ url_for('auth.signup') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label>Username:</label>
+                <input type="text" name="username" required>
+                <label>Email:</label>
+                <input type="email" name="email" required>
+                <label>Password:</label>
+                <input type="password" name="password" required>
+                <label>Confirm Password:</label>
+                <input type="password" name="confirm_password" required>
+                {% with messages = get_flashed_messages(category_filter=['signup']) %}
+                  {% if messages %}
+                    <ul class="flashes">
+                      {% for message in messages %}
+                        <li>{{ message }}</li>
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                {% endwith %}
+                <button type="submit" class="signup-btn form-btn">Sign Up</button>
+              </form>
           </div>
   </div>
 
