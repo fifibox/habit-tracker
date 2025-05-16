@@ -14,7 +14,7 @@
 {% block content %}
     <div class="container">
         <!-- Daily habit section -->
-        <section id="daily-habits">
+        <section>
             <h2>My Daily Habits</h2>
             <!-- Add a "Select a Date" button -->
             <div class="date-picker-container" style="margin-top: 20px;">
@@ -54,8 +54,8 @@
 
         <!-- Stats Section-->
         <section>
-            <div class="d-flex justify-content-between align-items-center mb-2 gap-2">
-                <h2 class="m-0">Stats</h2>
+            <div>
+                <h2>Stats</h2>
             </div>
             <div class="stats-line"><strong>Today:</strong> {{ completed_count }}/{{ total_habits }}</div>
             <!-- Doughnut chart to show today's completion -->

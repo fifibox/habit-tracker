@@ -116,14 +116,16 @@ label {
 /* Responsive styles */
 @media (max-width: 1300px) {
     section{
-        max-width:400px;
+        max-width:500px;
         }
+    #input-field{
+        width:70%;
+    }
     }
 
 @media (max-width: 1200px) {
     section{
-        max-width:550px;
-        margin:0 50px;
+        max-width:400px;
         }
     }
 

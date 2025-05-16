@@ -99,34 +99,10 @@
             </form>
         </section>
 
-        <section>
-            <h2>Database Data View</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Habit</th>
-                        <th>Status</th>
-                        <th>Created At</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for record in habits %}
-                    <tr>
-                        <td>{{ record.id }}</td>
-                        <td>{{ record.habit_name }}</td>
-                        <td>{{ record.records }}</td>
-                        <td>{{ record.created_at }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </section>
-
         <section class="profile-container" id="shared-habits-container">
             <h2>Shared Habits from your friends</h2>
             {% for item in shared_habits_data %}
-              <div class="shared-habit">
+              <div class="shared-habit yearly-grid-scroll">
                 <strong>From: </strong> <span>{{ item.sharer.username }}</span><br>
                 <strong>Habit: </strong> <span>{{ item.habit.habit_name }}</span>
                 <div id="shared-habit-grid-{{ item.habit.id }}" class="github-style-grid" style="margin-bottom: 40px;"></div>
