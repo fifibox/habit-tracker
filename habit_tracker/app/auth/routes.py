@@ -14,6 +14,7 @@ def signup():
         return redirect(url_for('main.dashboard'))
 
     if request.method == 'POST':
+        print("Form Data:", request.form)
         username = request.form.get('username', '').strip().lower()
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '')
@@ -44,12 +45,17 @@ def signup():
         # Create new user
         user = User(username=username, email=email)
         user.set_password(password)
-        db.session.add(user)
-        db.session.commit()
+        try:
+            db.session.add(user)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            flash('An error occurred while creating your account. Please try again.', 'signup')
+            print(f"Error: {e}")
+            return redirect(url_for('auth.signup'))
         login_user(user)
-        flash('Signup successful', 'signup')
-        return redirect(url_for('main.dashboard'))
-
+        flash('Signup successful! Welcome! You are signed in!', 'signup')
+        return redirect(url_for('auth.login'))
     return render_template('index.html')
 
 @auth_bp.route('/login', methods=['GET', 'POST'])

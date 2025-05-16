@@ -1,7 +1,7 @@
 """
 app package – creates and configures the Flask application.
 """
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -23,7 +23,6 @@ def create_app(config: dict = None) -> Flask:
     """Application factory"""
     app = Flask(__name__, static_folder="static")
     app.config.from_object(Config)
-
     if config:
         app.config.from_mapping(config)
 
@@ -44,6 +43,11 @@ def create_app(config: dict = None) -> Flask:
     @app.context_processor
     def inject_reset_token_form():
         return dict(reset_token_form=ResetPasswordForm())
+    
+    # app error handler
+    @app.errorhandler(404)
+    def page_not_found(e):
+        return render_template('404.html'), 404
 
     # ----------------------------------------------------------------
     # Register blueprints

@@ -63,6 +63,7 @@ section h2 {
 /* Buttons */
 .profile-container form button {
     display: inline-block;
+    height: 40px;
     background-color: #222;
     color: #fff;
     border: none;

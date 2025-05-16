@@ -5,7 +5,8 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, project_root)
 
 from app import create_app, db
-from app.models import User, Habit
+from app.models import User, Habit, HabitRecord
+from datetime import date, timedelta
 
 # Create the application instance
 app = create_app()
@@ -40,6 +41,17 @@ with app.app_context():
             db.session.add(habit)
             added += 1
         else:
+            # Add historical records for the existing habit (last 30 days)
+            today = date.today()
+            for i in range(30):
+                record_date = today - timedelta(days=i)
+                record_exists = HabitRecord.query.filter_by(habit_id=exists.id, date=record_date).first()
+                print(f"Checking record for {name} on {record_date}: {record_exists}")
+                # If the record does not exist, create it
+                if not record_exists:
+                    record = HabitRecord(habit_id=exists.id, date=record_date, completed=False)
+                    db.session.add(record)
+                    print(f"Added record for {name} on {record_date}")
             print(f"Habit '{name}' already exists for user {username}. Skipping creation.")
     
     if added > 0:
