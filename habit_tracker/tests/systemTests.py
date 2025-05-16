@@ -40,8 +40,8 @@ class TestHabitTracker(unittest.TestCase):
         password_field = self.driver.find_element(By.NAME, "password")
         login_button = self.driver.find_element(By.NAME, "submit")
 
-        username_field.send_keys("testuser")
-        password_field.send_keys("password")
+        username_field.send_keys("test")
+        password_field.send_keys("test123")
         login_button.click()
 
         # Wait for the next page to load and check for a specific element
@@ -49,4 +49,33 @@ class TestHabitTracker(unittest.TestCase):
             EC.presence_of_element_located((By.ID, "dashboard"))
         )
         self.assertIn("Dashboard", self.driver.page_source)
+
+    def test_dashboard_page(self):
+        self.driver.get("http://localhost:5000/dashboard")
+        # Check for specific elements on the dashboard page
+        self.assertIn("Your Habits", self.driver.page_source)
+        self.assertIn("Add Habit", self.driver.page_source)
+        self.assertIn("Habit List", self.driver.page_source)
+        # Add more assertions as needed
+    
+    def test_weekly_summary_page(self):
+        self.driver.get("http://localhost:5000/weekly")
+        # Check for specific elements on the weekly summary page
+        self.assertIn("Weekly Summary", self.driver.page_source)
+        self.assertIn("Habit Progress", self.driver.page_source)
+        # Add more assertions as needed
+
+    def test_monthly_page(self):
+        self.driver.get("http://localhost:5000/monthly")
+        # Check for specific elements on the monthly page
+        self.assertIn("Monthly Summary", self.driver.page_source)
+        self.assertIn("Habit Progress", self.driver.page_source)
+        # Add more assertions as needed
+
+    def test_yearly_page(self):
+        self.driver.get("http://localhost:5000/yearly")
+        # Check for specific elements on the yearly page
+        self.assertIn("Yearly Summary", self.driver.page_source)
+        self.assertIn("Habit Progress", self.driver.page_source)
+        # Add more assertions as needed
 
