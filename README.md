@@ -37,14 +37,27 @@ A key feature is the ability to share your yearly progress grid with friends, su
 ## Getting Started
 This section will include how to launch the application.
 
-1. git clone …
-2. cd gc_2_app/habit_tracker
-3. python -m venv venv && source venv/bin/activate
-4. pip install -r requirements.txt
-5. export FLASK_APP=app.py          
-6. flask db upgrade             
-7. (optional) python scripts/seed.py 
-8. flask run
+```
+# Clone the repo
+git clone https://github.com/erdenezaya/gc_2_app.git
+cd gc_2_app
+
+# Create and activate a virtual environment
+python3 -m venv venv
+source venv/bin/activate # On macOS/Linux
+venv\Scripts\activate # On Windows
+
+# Install dependencies
+pip install -r requirements.txt
+
+# set secret key in your local environment
+cd habit_tracker
+touch .env
+
+# Run the application
+python run.py 
+# or python scripts/seed.py for initialising the database 
+```
 
 > **Note:** This application uses Google Gmail API for sending password reset emails. You'll need two files to make it work:
 > - `credentials.json`: Contains your Google API credentials
@@ -79,11 +92,11 @@ gc_2_app/                            ← GitHub repository directory
 │   ├── migrations/              ← database migration files
 │   ├── scripts/                 ← utility scripts (e.g., seed.py)
 │   ├── backups/                 ← database backup files
-│   ├── tests/                   ← test files go here
-│   ├── requirements.txt         ← list of Python packages
-│   └── app.py                   ← main Flask application entry point
+│   ├── tests/                   ← test files go here      
+│   └── run.py                   ← main Flask application entry point
 ├── deliverables/               ← intermediate presentation materials
 ├── README.md                   ← info about your project
+├── requirements.txt            ← list of Python packages
 ├── venv/                       ← local virtual environment (do not upload to GitHub)
 └── .gitignore                  ← ignore development files in venv/ etc.
 ```
