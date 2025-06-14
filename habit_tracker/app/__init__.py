@@ -53,8 +53,8 @@ def create_app(config: dict = None) -> Flask:
     # ----------------------------------------------------------------
     # Register blueprints
     # ----------------------------------------------------------------
-    from app.auth import auth_bp
-    from app.main import main_bp
+    from habit_tracker.app.auth import auth_bp
+    from habit_tracker.app.main import main_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
