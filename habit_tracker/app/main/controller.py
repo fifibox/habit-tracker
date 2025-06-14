@@ -1,9 +1,9 @@
-from app.models import Habit, HabitRecord, User
+from habit_tracker.app.models import Habit, HabitRecord, User
 from datetime import datetime, timedelta
 import itsdangerous
 from flask_mail import Message
 from flask import current_app
-from app import db
+from habit_tracker.app import db
 
 # ------------------------------------------------------------------
 # Helper functions
