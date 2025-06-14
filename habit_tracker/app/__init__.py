@@ -8,7 +8,7 @@ from flask_login import LoginManager
 from flask_wtf import CSRFProtect
 from habit_tracker.app.config import Config
 from flask_mail import Mail
-from app.forms import ResetPasswordForm
+from habit_tracker.app.forms import ResetPasswordForm
 
 
 # ------------------------------------------------------------------
