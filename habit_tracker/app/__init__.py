@@ -6,9 +6,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_wtf import CSRFProtect
-from app.config import Config 
+from habit_tracker.app.config import Config
 from flask_mail import Mail
 from app.forms import ResetPasswordForm
+
 
 # ------------------------------------------------------------------
 # Extensions (created once, initialised later inside create_app())
