@@ -1,13 +1,13 @@
 from flask import render_template, redirect, url_for, request, flash, jsonify, current_app
 from flask_login import login_required, current_user
-from app.forms import ShareHabitForm, PasswordResetRequestForm, ResetPasswordForm
-from app import db
-from app.models import Habit, HabitRecord, User, SharedHabit
+from habit_tracker.app.forms import ShareHabitForm, PasswordResetRequestForm, ResetPasswordForm
+from habit_tracker.app import db
+from habit_tracker.app.models import Habit, HabitRecord, User, SharedHabit
 from datetime import datetime, timedelta
 from . import main_bp
 from .controller import create_default_habits, get_habit_color, calculate_streak, get_weekly_completion, generate_reset_token, verify_reset_token
-from app.config import COLOR_PALETTE, COLOR_GRADIENTS, PROGRESS_BAR_GRADIENT
-from app.gmail_api import send_gmail
+from habit_tracker.app.config import COLOR_PALETTE, COLOR_GRADIENTS, PROGRESS_BAR_GRADIENT
+from habit_tracker.app.gmail_api import send_gmail
 from calendar import monthrange
 
 # ------------------------------------------------------------------
